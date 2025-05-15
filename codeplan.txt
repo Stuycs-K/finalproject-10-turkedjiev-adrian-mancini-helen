@@ -1,0 +1,6 @@
+1. read pythod code
+2. parse into distinct expressions (subset of python)
+3. classify expressions (eg as an arithmatic statement)
+4. match to lolcode
+5. put lolcode snipits together in the same order
+6. output lolcode
