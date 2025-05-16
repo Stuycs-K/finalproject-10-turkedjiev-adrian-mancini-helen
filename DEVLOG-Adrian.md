@@ -12,7 +12,7 @@ This document must be updated daily every time you finish a work session.
     - https://clever-thompson-493f7c.netlify.app/docs/operators/
     - https://lokalise.com/blog/lolcode-tutorial-on-programming-language-for-cat-lovers/
 
-### 2025-05-15 - More Research
+### 2025-05-16 - More Research
 
 - I started looking into how we could parse python code into distinct expressions. It seems like the way to do this is to use AST, a built-in python module.
 - I began trying to learn about AST's syntax and Abstract Syntax Trees using these sources:
