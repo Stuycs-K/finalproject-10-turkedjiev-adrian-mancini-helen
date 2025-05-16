@@ -11,3 +11,12 @@ This document must be updated daily every time you finish a work session.
     - https://gist.github.com/sharmaeklavya2/8a0e2581baf969be0f64
     - https://clever-thompson-493f7c.netlify.app/docs/operators/
     - https://lokalise.com/blog/lolcode-tutorial-on-programming-language-for-cat-lovers/
+
+### 2025-05-15 - More Research
+
+- I started looking into how we could parse python code into distinct expressions. It seems like the way to do this is to use AST, a built-in python module.
+- I began trying to learn about AST's syntax and Abstract Syntax Trees using these sources:
+    - https://docs.python.org/3/library/ast.html (the documentation for AST)
+    - https://medium.com/@wshanshan/intro-to-python-ast-module-bbd22cd505f7
+    - https://github.com/xbeat/Machine-Learning/blob/main/Exploring%20Python's%20Abstract%20Syntax%20Tree%20Manipulation.md
+ 
