@@ -2,27 +2,26 @@
 
 ## Group Members:
 
-names here.(CHANGE THIS!!!!!)
-       
+Helen Mancini and Adrian Turkedjiev
+
 # Intentions:
 
-A statement of the problem you are solving and/or a high level description of the project. (CHANGE THIS!!!!!)
-    
+LOLCODE (eso-lang) language interpreter for a subset of python
+
 # Intended usage:
 
-A description as to how the project will be used (describe the user interface). (CHANGE THIS!!!!!)
-  
+TBD...
+
 # Technical Details:
 
-(CHANGE THIS!!!!!)
+TBD...
 
-A description of your technical design. This should include: 
-   
-How you will be using the topics covered in class in the project.
+Topics from class: Reading and encoding/interpreting files, code obfuscation...
      
-How you are breaking down the project and who is responsible for which parts.
-  
+Adrian will do...
+
+Helen will do...
     
 # Intended pacing:
 
-A timeline with expected completion dates of parts of the project. (CHANGE THIS!!!!!)
+TBD...
