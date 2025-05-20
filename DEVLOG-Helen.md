@@ -9,3 +9,9 @@ Decided between esoteric coding languages, decided to begin coding a language in
 - https://gist.github.com/sharmaeklavya2/8a0e2581baf969be0f64
   
 We also made codeplan.txt and outlined our plan for coding the interpreter. 
+
+### 2025-05-16 - ABSENT
+### 2025-05-19 - ABSENT
+
+### 2025-05-20 - Began executing plan
+
