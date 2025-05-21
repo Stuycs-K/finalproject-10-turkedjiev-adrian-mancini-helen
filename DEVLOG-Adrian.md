@@ -20,3 +20,8 @@ This document must be updated daily every time you finish a work session.
     - https://medium.com/@wshanshan/intro-to-python-ast-module-bbd22cd505f7
     - https://github.com/xbeat/Machine-Learning/blob/main/Exploring%20Python's%20Abstract%20Syntax%20Tree%20Manipulation.md
  
+### 2025-05-19 - ABSENT
+
+### 2025-05-20 - ABSENT
+
+### 2025-05-21 - ABSENT
