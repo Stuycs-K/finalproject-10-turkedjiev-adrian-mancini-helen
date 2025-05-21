@@ -11,7 +11,7 @@ def parsePy(s):
     for i in range(len(lines)):
         l = lines[i]
         if l[0] == '#': #removes lines that are commented out
-            lines.remove(i)
+            #seperate function to deal with these since they're easy??
         if l[0] == '\t': #checks if there's an indent (maybe?) and concatinates with command before? <-- not sure if this is the logic you want to use, so we can change it...
             #more stuff here, plus conditions if there are multiple indents
     return lines
