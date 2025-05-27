@@ -24,3 +24,10 @@ Researched more about LOLCODE interpreters:
 ### 2025-05-21 - Worked on interpret.py, parse function
 Spliting strings of python into arrays to be catagorized as different python functions and translated
 Possibly can use AST (what Adrian researched for this)?
+
+### 2025-05-22 - ABSENT, AP Calc BC Exam
+### 2025-05-23 - ABSENT, excused for national debate tournament
+### 2025-05-25 - HOMEWORK: Pivoting project to something more manageable per Mr. K's advice. 
+- Found MD5 implementation walkthrough materials: https://www.youtube.com/watch?v=HWpaz5XsECc
+- Notes: MD5 takes a message of any length and outputs a digest that is always 128 bits. It's a broken secure hash, but important historically...
+- Need to make sure we get it correct including "asdf"
