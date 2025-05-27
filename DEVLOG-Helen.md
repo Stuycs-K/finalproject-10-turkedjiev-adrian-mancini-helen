@@ -27,7 +27,11 @@ Possibly can use AST (what Adrian researched for this)?
 
 ### 2025-05-22 - ABSENT, AP Calc BC Exam
 ### 2025-05-23 - ABSENT, excused for national debate tournament
-### 2025-05-25 - HOMEWORK: Pivoting project to something more manageable per Mr. K's advice. 
+### 2025-05-25 - HOMEWORK: Pivoting project to something more manageable per Mr. K's advice?
 - Found MD5 implementation walkthrough materials: https://www.youtube.com/watch?v=HWpaz5XsECc
 - Notes: MD5 takes a message of any length and outputs a digest that is always 128 bits. It's a broken secure hash, but important historically...
 - Need to make sure we get it correct including "asdf"
+
+### 2025-05-27 - Decided on modified project (not MD5): lolcode translator.
+- updated sample code
+- planned out parse handling of multiline commands, began implementation... 
