@@ -28,3 +28,16 @@ This document must be updated daily every time you finish a work session.
 
 ### 2025-05-22 - ABSENT
 
+### 2025-05-(23-26) - Reorienting Project
+
+- Recieved feedback that intial project was unfeasible.
+- Decided to instead translate LOLCODE into Python code, with the potential extension of translating LOLCODE to other similar esoteric languages 
+
+### 2025-05-27 - Start of Implementation 
+
+- created stripStatement() method to aid in classification of LOLCODE statements.
+- began work on parseLOL() method, simply identifying what is happening in each line of LOLCODE. 
+    - working based of this LOLCODE documentation: https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md
+    - Have so far ommitted the following aspects of LOLCODE: 
+        - Function types are declared/initialized using the HOW DUZ I / IF U SAY SO blocks, however they behave the same as variables
+        - The SRS operation can be used to interpret a YARN (or something castable to a YARN) as an identifier. This operator may be used anywhere that a regular identifier is expected.
