@@ -1,4 +1,53 @@
-#any imports..?
+'''
+File Structure:
+
+- each statement becomes a list entry 
+- each list entry is a dictionary = {
+    "id" : (give each statment a number, starting at 1)
+    "original" : (the original statement)
+    "type" : (one of a pre-set list of possible functionalities)
+    "arguments" : [literal_value, "variable name", expr(id)]
+    "body" : (dependent on the type, contains additional information)
+    "parent" : (a different id)
+}
+
+ID corresponds to scope depth. EX:
+
+                CODE:                               IDS:
+
+def func(arg1, arg2):                   1
+    arg1 += 4                           1.1 --> arg1 = (val)
+                                        1.11 --> val = (arg1 + 4)
+    if arg1 > arg2:                     1.2   
+        arg2 = mod(arg1, arg2)          1.21 --> arg2 = (val)
+                                        1.22 --> val = mod(arg1, arg2)
+
+TYPES:
+
+declare
+    "arguments" : ["variable_name"]
+
+instatiate
+    "arguments" : ["variable_name", "assigned_type"]
+
+assign
+    "arguments" : ["variable_name", "assigned_value"]
+
+math
+    "arguments" : ["operator", "argument_1", "argument_2"]
+
+comment
+    "arguments" : ["line_index", "content"]
+
+print
+    "arguments" : ["value"]
+
+
+
+'''
+
+
+
 
 def read(filename):
     f = open(filename, "r") #does this work for python files? will newlines and indents '\t' be read into the string?
@@ -21,11 +70,11 @@ def parseLOL(s):
             prediction += "end of file; ignore"
         if "I HAS A" in bare_content:
             if "ITZ A" in bare_content:
-                prediction += "instantiates and initializes a variable"
+                prediction += "instantiates and gives it a type"
             elif "ITZ" in bare_content:
-                prediction += "declares variable"
+                prediction += "assigns value to variable"
             else:
-                prediction += "instatiates a variable and initializes it to NOOB"
+                prediction += "declares a variable "
         if " R " in bare_content:
             prediction += "assinging value to variable"
         if "R NOOB" in bare_content:
