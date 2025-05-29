@@ -8,19 +8,19 @@ File Structure:
     "type" : (one of a pre-set list of possible functionalities)
     "arguments" : [literal_value, "variable name", expr(id)]
     "body" : (dependent on the type, contains additional information)
-    "parent" : (a different id)
 }
 
 ID corresponds to scope depth. EX:
 
                 CODE:                               IDS:
 
-def func(arg1, arg2):                   1
+def func(arg1, arg2):   
+    arg3 R 9                1
     arg1 += 4                           1.1 --> arg1 = (val)
-                                        1.11 --> val = (arg1 + 4)
-    if arg1 > arg2:                     1.2   
-        arg2 = mod(arg1, arg2)          1.21 --> arg2 = (val)
-                                        1.22 --> val = mod(arg1, arg2)
+                                        1.2 --> val = (arg1 + 4)
+    if arg1 > arg2:                     1.3   
+        arg2 = mod(arg1, arg2)          1.31 --> arg2 = (val)
+                                        1.32 --> val = mod(arg1, arg2)
 
 TYPES:
 
@@ -46,8 +46,13 @@ print
 
 '''
 
+global ast = []
+global latest_id = 0
+global latest_scope = 0
 
 
+def calc_id():
+    return latest_id + (1 * 10**-latest_scope)
 
 def read(filename):
     f = open(filename, "r") #does this work for python files? will newlines and indents '\t' be read into the string?
@@ -70,8 +75,20 @@ def parseLOL(s):
             prediction += "end of file; ignore"
         if "I HAS A" in bare_content:
             if "ITZ A" in bare_content:
+                # I HAS A <x> ITZ A <y>
+                tokens = line.split()
+                variable_name = tokens[3]
+                assigned_type = tokens[6]
+                ast += {
+                    "id" : calc_id(),
+                    "original" : line,
+                    "type" : "instatiate",
+                    "arguments" : [variable_name, assigned_type],
+                    "body" : []
+                }
                 prediction += "instantiates and gives it a type"
             elif "ITZ" in bare_content:
+                # I HAS A <X> ITZ <3 + 4 / 2>
                 prediction += "assigns value to variable"
             else:
                 prediction += "declares a variable "
@@ -153,6 +170,8 @@ def translate(c): #input the array w/ type and arguments
 def overalFunc(filename):
     pass
     #this will put everything together, call the read command and then output the translated code??
+
+sum of [product of 3 and 4] and 6
 
 
 
