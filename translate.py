@@ -79,7 +79,38 @@ def parseLOL(s):
             prediction += "assinging value to variable"
         if "R NOOB" in bare_content:
             prediction += "deallocation"
-
+        #are we including SRS, YARN & regular identifier?
+    
+        #MATH
+        if "SUM OF" in bare_content:
+            tokens = line.split()
+            operator = "+"
+            agr1 = tokens[2] #NOT THIS SIMPLE, NEEDS RECURSION TO ACCOUNT FOR inbetween SUM OF ... AN #
+            '''
+                HAI 1.2
+                VISIBLE "Welcome to JDoodle!!"
+                VISIBLE SUM OF PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6 AN 9 <-- answer 0
+                KTHXBYE
+            '''
+            arg2 = tokens[4]
+            ast += {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "math",
+                "arguments" : [operator, arg1, arg2],
+                "body" : []
+                }
+            prediction += "addition"
+        if "DIFF OF" in bare_content:
+            prediction += "subtraction"
+        if "PRODUKT OF" in bare_content:
+            prediction += "multiplication"
+        if "QUOSHUNT OF" in bare_content:
+            prediction += "division"
+        if "BIGGR OF" in bare_content:
+            prediction += "min"
+        if "SMALLR OF" in bare_content:
+            prediction += "max"
         
 
 
@@ -108,7 +139,6 @@ def stripStatement(statement):
             ret += statement[i]
     ret = ret.strip() # remove leading and trailing whitespace 
     return ret
-
 
 
 def checkCommand(s):
