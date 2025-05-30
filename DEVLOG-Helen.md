@@ -40,5 +40,9 @@ Possibly can use AST (what Adrian researched for this)?
 ### 2025-05-29 - implementation in translate.py, specifically math functions
 - began with SUM OF, spliting command into arguments w/ in math type
 - need to figure out how to handle things like SUM OF QUOTIENT OF... (recursive)
+- testing with this online interpreter: https://www.jdoodle.com/execute-lolcode-online
 
 ### 2025-05-29 - HOMEWORK: continuing implementing math type
+- made function mathParse so wouldn't need to repeat code
+- using list indices to do recursive call, need to test if dictionary gets correctly printed
+- missing mod function.. any others?
