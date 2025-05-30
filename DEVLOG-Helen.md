@@ -46,3 +46,8 @@ Possibly can use AST (what Adrian researched for this)?
 - made function mathParse so wouldn't need to repeat code
 - using list indices to do recursive call, need to test if dictionary gets correctly printed
 - missing mod function.. any others?
+
+### 2025-05-30 - implementing all types in dictionary
+- used same recursive logic to find parts of a line that need to be parsed again for other commands
+- implemented LOLCODE parsing for variable assign, variable instantiate, print commands
+- also added mod to math
