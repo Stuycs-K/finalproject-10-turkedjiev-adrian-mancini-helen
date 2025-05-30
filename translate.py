@@ -27,6 +27,9 @@ TYPES:
 declare
     "arguments" : ["variable_name"]
 
+deallocate
+    "arguments" : ["variable_name"]
+
 instatiate
     "arguments" : ["variable_name", "assigned_type"]
 
@@ -70,6 +73,7 @@ def parseLOL(s):
         if bare_content == "":
             prediction += "empty line"
         if "HAI" in bare_content:
+            #should this have a dictionary entry if no arguments?
             prediction += "start of file; ignore"
         if "KTHXBYE" in bare_content:
             prediction += "end of file; ignore"
@@ -89,15 +93,59 @@ def parseLOL(s):
                 prediction += "instantiates and gives it a type"
             elif "ITZ" in bare_content:
                 # I HAS A <X> ITZ <3 + 4 / 2>
+                tokens = line.split()
+                variable_name = tokens[3]
+                for i in (len(tokens)-6):
+                    recur += tokens[i+6]  + " " #concatinates all from ITZ onwards with spaces between
+                assigned_value = parseLOL(recur)
+                ast += {
+                    "id" : calc_id(),
+                    "original" : line,
+                    "type" : "assign",
+                    "arguments" : [variable_name, assigned_value],
+                    "body" : []
+                }
                 prediction += "assigns value to variable"
             else:
+                tokens = line.split()
+                variable_name = tokens[3]
+                ast += {
+                    "id" : calc_id(),
+                    "original" : line,
+                    "type" : "declare",
+                    "arguments" : [variable_name],
+                    "body" : []
+                }
                 prediction += "declares a variable "
         if " R " in bare_content:
+            tokens = line.split()
+            variable_name = tokens[0]
+            for i in (len(tokens)-index-2):
+                recur += tokens[i+index+2]  + " " #concatinates all after R
+            assigned_value = parseLOL(recur)
+            ast += {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "assign", #this is the same type as initializing and assigning-- is that okay...
+                "arguments" : [variable_name, assigned_value], 
+                "body" : []
+            }    
             prediction += "assinging value to variable"
-        if "R NOOB" in bare_content:
+        if "R NOOB" in bare_content: #noob is just a variable type, do we need a this as a specific type?
             prediction += "deallocation"
         #are we including SRS, YARN & regular identifier?
-    
+        if "VISIBLE" in bare_content:
+            tokens = line.split()
+            for i in (len(tokens)-1):
+                recur += tokens[i+1]
+            value = parseLOL(recur)
+            ast += {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "print",
+                "arguments" : [value],
+                "body" : []
+            }
         #MATH
         if "SUM OF" in bare_content:
             mathParse(line, "+")
@@ -111,14 +159,15 @@ def parseLOL(s):
         if "QUOSHUNT OF" in bare_content:
             mathParse(line, "/")
             prediction += "division"
+        if "MOD OF" in bare_content:
+            mathParse(line, "%")
+            prediction += "mod"
         if "BIGGR OF" in bare_content:
             mathParse(line, ">")
             prediction += "min"
         if "SMALLR OF" in bare_content:
             mathParse(line, "<")
             prediction += "max"
-        
-
 
         print(f'{line} ---> {prediction}')
 
@@ -129,7 +178,7 @@ def mathParse(l, o):
     tokens = l.split() 
     operator = o
     for i in (len(tokens)-4):
-        recur += tokens[i+2] #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
+        recur += tokens[i+2] + " " #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
     agr1 = parseLOL(recur)
     '''
     Make sure to account for recursive case for inbetween SUM OF ... AN #
@@ -184,8 +233,6 @@ def translate(c): #input the array w/ type and arguments
 def overalFunc(filename):
     pass
     #this will put everything together, call the read command and then output the translated code??
-
-sum of [product of 3 and 4] and 6
 
 
 
