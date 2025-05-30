@@ -100,33 +100,22 @@ def parseLOL(s):
     
         #MATH
         if "SUM OF" in bare_content:
-            tokens = line.split()
-            operator = "+"
-            agr1 = tokens[2] #NOT THIS SIMPLE, NEEDS RECURSION TO ACCOUNT FOR inbetween SUM OF ... AN #
-            '''
-                HAI 1.2
-                VISIBLE "Welcome to JDoodle!!"
-                VISIBLE SUM OF PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6 AN 9 <-- answer 0
-                KTHXBYE
-            '''
-            arg2 = tokens[4]
-            ast += {
-                "id" : calc_id(),
-                "original" : line,
-                "type" : "math",
-                "arguments" : [operator, arg1, arg2],
-                "body" : []
-                }
+            mathParse(line, "+")
             prediction += "addition"
         if "DIFF OF" in bare_content:
+            mathParse(line, "-")
             prediction += "subtraction"
         if "PRODUKT OF" in bare_content:
+            mathParse(line, "*")
             prediction += "multiplication"
         if "QUOSHUNT OF" in bare_content:
+            mathParse(line, "/")
             prediction += "division"
         if "BIGGR OF" in bare_content:
+            mathParse(line, ">")
             prediction += "min"
         if "SMALLR OF" in bare_content:
+            mathParse(line, "<")
             prediction += "max"
         
 
@@ -134,6 +123,31 @@ def parseLOL(s):
         print(f'{line} ---> {prediction}')
 
     return lines
+
+#made a function to not repeat math code...
+def mathParse(l, o):
+    tokens = l.split() 
+    operator = o
+    for i in (len(tokens)-4):
+        recur += tokens[i+2] #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
+    agr1 = parseLOL(recur)
+    '''
+    Make sure to account for recursive case for inbetween SUM OF ... AN #
+    EXAMPLE:
+        HAI 1.2
+        VISIBLE "Welcome to JDoodle!!"
+        VISIBLE SUM OF PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6 AN 9 <-- answer 0
+        KTHXBYE
+    '''
+    arg2 = tokens[len(tokens) -1]
+    ast += {
+        "id" : calc_id(),
+        "original" : line,
+        "type" : "math",
+        "arguments" : [operator, arg1, arg2],
+        "body" : []
+        }
+    #doesn't have a return because just adding to a global
 
 def stripStatement(statement):
     '''
