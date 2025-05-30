@@ -34,4 +34,11 @@ Possibly can use AST (what Adrian researched for this)?
 
 ### 2025-05-27 - Decided on modified project (not MD5): lolcode translator.
 - updated sample code
-- planned out parse handling of multiline commands, began implementation... 
+- planned out parse handling of multiline commands, began implementation...
+
+### 2025-05-28 - ABSENT, SICK
+### 2025-05-29 - implementation in translate.py, specifically math functions
+- began with SUM OF, spliting command into arguments w/ in math type
+- need to figure out how to handle things like SUM OF QUOTIENT OF... (recursive)
+
+### 2025-05-29 - HOMEWORK: continuing implementing math type
