@@ -62,116 +62,118 @@ def read(filename):
     s = f.read()
     return s
 
-def parseLOL(s):
+def parseLOL(line):
     '''
     https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md
     '''
-    lines = s.splitlines()
-    for line in lines:
-        prediction = ""
-        bare_content = stripStatement(line)
-        if bare_content == "":
-            prediction += "empty line"
-        if "HAI" in bare_content:
-            #should this have a dictionary entry if no arguments?
-            prediction += "start of file; ignore"
-        if "KTHXBYE" in bare_content:
-            prediction += "end of file; ignore"
-        if "I HAS A" in bare_content:
-            if "ITZ A" in bare_content:
-                # I HAS A <x> ITZ A <y>
-                tokens = line.split()
-                variable_name = tokens[3]
-                assigned_type = tokens[6]
-                ast += {
-                    "id" : calc_id(),
-                    "original" : line,
-                    "type" : "instatiate",
-                    "arguments" : [variable_name, assigned_type],
-                    "body" : []
-                }
-                prediction += "instantiates and gives it a type"
-            elif "ITZ" in bare_content:
-                # I HAS A <X> ITZ <3 + 4 / 2>
-                tokens = line.split()
-                variable_name = tokens[3]
-                for i in (len(tokens)-6):
-                    recur += tokens[i+6]  + " " #concatinates all from ITZ onwards with spaces between
-                assigned_value = parseLOL(recur)
-                ast += {
-                    "id" : calc_id(),
-                    "original" : line,
-                    "type" : "assign",
-                    "arguments" : [variable_name, assigned_value],
-                    "body" : []
-                }
-                prediction += "assigns value to variable"
-            else:
-                tokens = line.split()
-                variable_name = tokens[3]
-                ast += {
-                    "id" : calc_id(),
-                    "original" : line,
-                    "type" : "declare",
-                    "arguments" : [variable_name],
-                    "body" : []
-                }
-                prediction += "declares a variable "
-        if " R " in bare_content:
+    prediction = ""
+    bare_content = stripStatement(line)
+    if bare_content == "":
+        prediction += "empty line"
+    if "HAI" in bare_content:
+        #should this have a dictionary entry if no arguments?
+        prediction += "start of file; ignore"
+    if "KTHXBYE" in bare_content:
+        prediction += "end of file; ignore"
+    if "I HAS A" in bare_content:
+        if "ITZ A" in bare_content:
+            # I HAS A <x> ITZ A <y>
             tokens = line.split()
-            variable_name = tokens[0]
-            for i in (len(tokens)-index-2):
-                recur += tokens[i+index+2]  + " " #concatinates all after R
-            assigned_value = parseLOL(recur)
-            ast += {
+            variable_name = tokens[3]
+            assigned_type = tokens[6]
+            ret = {
                 "id" : calc_id(),
                 "original" : line,
-                "type" : "assign", #this is the same type as initializing and assigning-- is that okay...
-                "arguments" : [variable_name, assigned_value], 
-                "body" : []
-            }    
-            prediction += "assinging value to variable"
-        if "R NOOB" in bare_content: #noob is just a variable type, do we need a this as a specific type?
-            prediction += "deallocation"
-        #are we including SRS, YARN & regular identifier?
-        if "VISIBLE" in bare_content:
-            tokens = line.split()
-            for i in (len(tokens)-1):
-                recur += tokens[i+1]
-            value = parseLOL(recur)
-            ast += {
-                "id" : calc_id(),
-                "original" : line,
-                "type" : "print",
-                "arguments" : [value],
+                "type" : "instatiate",
+                "arguments" : [variable_name, assigned_type],
                 "body" : []
             }
-        #MATH
-        if "SUM OF" in bare_content:
-            mathParse(line, "+")
-            prediction += "addition"
-        if "DIFF OF" in bare_content:
-            mathParse(line, "-")
-            prediction += "subtraction"
-        if "PRODUKT OF" in bare_content:
-            mathParse(line, "*")
-            prediction += "multiplication"
-        if "QUOSHUNT OF" in bare_content:
-            mathParse(line, "/")
-            prediction += "division"
-        if "MOD OF" in bare_content:
-            mathParse(line, "%")
-            prediction += "mod"
-        if "BIGGR OF" in bare_content:
-            mathParse(line, ">")
-            prediction += "min"
-        if "SMALLR OF" in bare_content:
-            mathParse(line, "<")
-            prediction += "max"
+            prediction += "instantiates and gives it a type"
+        elif "ITZ" in bare_content:
+            # I HAS A <X> ITZ <3 + 4 / 2>
+            tokens = line.split()
+            variable_name = tokens[3]
+            for i in (len(tokens)-6):
+                recur += tokens[i+6]  + " " #concatinates all from ITZ onwards with spaces between
+            assigned_value = parseLOL(recur) 
+            ret = {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "assign",
+                "arguments" : [variable_name, assigned_value],
+                "body" : []
+            }
+            prediction += "assigns value to variable"
+        else:
+            tokens = line.split()
+            variable_name = tokens[3]
+            ret = {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "declare",
+                "arguments" : [variable_name],
+                "body" : []
+            }
+            prediction += "declares a variable "
+    if " R " in bare_content:
+        tokens = line.split()
+        variable_name = tokens[0]
+        for i in (len(tokens)-index-2):
+            recur += tokens[i+index+2]  + " " #concatinates all after R
+        assigned_value = parseLOL(recur)
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "assign", #this is the same type as initializing and assigning-- is that okay...
+            "arguments" : [variable_name, assigned_value], 
+            "body" : []
+        }    
+        prediction += "assinging value to variable"
+    #are we including SRS, YARN & regular identifier?
+    if "VISIBLE" in bare_content:
+        tokens = line.split()
+        for i in (len(tokens)-1):
+            recur += tokens[i+1]
+        value = parseLOL(recur)
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "print",
+            "arguments" : [value],
+            "body" : []
+        }
+    #MATH
+    if "SUM OF" in bare_content:
+        ret = mathParse(line, "+")
+        prediction += "addition"
+    if "DIFF OF" in bare_content:
+        ret = mathParse(line, "-")
+        prediction += "subtraction"
+    if "PRODUKT OF" in bare_content:
+        ret = mathParse(line, "*")
+        prediction += "multiplication"
+    if "QUOSHUNT OF" in bare_content:
+        ret = mathParse(line, "/")
+        prediction += "division"
+    if "MOD OF" in bare_content:
+        ret = mathParse(line, "%")
+        prediction += "mod"
+    if "BIGGR OF" in bare_content:
+        ret = mathParse(line, ">")
+        prediction += "min"
+    if "SMALLR OF" in bare_content:
+        ret = mathParse(line, "<")
+        prediction += "max"
 
-        print(f'{line} ---> {prediction}')
 
-    return lines
+    print(f'{line} ---> {prediction}')
+
+    return 
+
+def run():
+    lines = s.splitlines()
+    for line in lines:
+        ast += parseLOL(line)
 
 #made a function to not repeat math code...
 def mathParse(l, o):
@@ -185,18 +187,18 @@ def mathParse(l, o):
     EXAMPLE:
         HAI 1.2
         VISIBLE "Welcome to JDoodle!!"
-        VISIBLE SUM OF PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6 AN 9 <-- answer 0
+        VISIBLE SUM OF 9 AN PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6                  BTW answer 0
         KTHXBYE
     '''
     arg2 = tokens[len(tokens) -1]
-    ast += {
+    ret = {
         "id" : calc_id(),
         "original" : line,
         "type" : "math",
         "arguments" : [operator, arg1, arg2],
         "body" : []
         }
-    #doesn't have a return because just adding to a global
+    return ret
 
 def stripStatement(statement):
     '''
@@ -246,11 +248,3 @@ parseLOL(LOLCODE)
 # stripStatement("I HAS A VAR ITZ 12          BTW VAR = 12")
 # stripStatement('I HAS A name ITZ "var"')
 # stripStatement('I Has A misleading_variable ITZ "KTHXBYE" AND ITS AWESOME')
-
-
-
-
-
-
-
-
