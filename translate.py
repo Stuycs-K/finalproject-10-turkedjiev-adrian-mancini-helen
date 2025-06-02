@@ -40,12 +40,19 @@ math
     "arguments" : ["operator", "argument_1", "argument_2"]
 
 comment
-    "arguments" : ["line_index", "content"]
+    "arguments" : ["content"]
 
 print
     "arguments" : ["value"]
 
+if
+    "arguments" : ["condition", "content"]
 
+loop
+    "arguments" : ["condition", "content"]
+    
+function
+    "arguments" : ["function_name", "variable1", "variable2", "content"]
 
 '''
 
@@ -164,24 +171,54 @@ def parseLOL(line):
     if "SMALLR OF" in bare_content:
         ret = mathParse(line, "<")
         prediction += "max"
-
-
+    #COMMENTS
+    if "BTW " in bare_content:
+        content = line[4:]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "comment",
+            "arguments" : [content], 
+            "body" : []
+            }
+    if "OBTW" in bare_content:
+        content[0] = line[5:]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "comment",
+            "arguments" : [content], 
+            "body" : []
+            }
+    if "IM IN YR" in bare_content:
+        ...
+    if "HOW IZ I" in bare_content:
+        ...
     print(f'{line} ---> {prediction}')
 
-    return 
+    return
+
+def parseMulti(line):
+    
 
 def run():
+    global latest_scope
     lines = s.splitlines()
     for line in lines:
+        leading_spaces = len(line) - len(line.lstrip())
+        latest_scope = leading_spaces/4
+        if lastest_scope > 0:
+            parseMulti(line)
+        else:
         ast += parseLOL(line)
 
 #made a function to not repeat math code...
 def mathParse(l, o):
     tokens = l.split() 
     operator = o
-    for i in (len(tokens)-4): #THIS NEEDS TO BE EDITED TO FIND THE CORRECT AN and recur both sides of it... not sure how to do that... 
-        recur += tokens[i+2] + " " #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
-    agr1 = parseLOL(recur)
+    #for i in (len(tokens)-4): #THIS NEEDS TO BE EDITED TO FIND THE CORRECT AN and recur both sides of it... not sure how to do that... 
+    #    recur += tokens[i+2] + " " #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
+    #agr1 = parseLOL(recur)
     '''
     Make sure to account for recursive case for inbetween SUM OF ... AN #
     EXAMPLE:
@@ -190,6 +227,7 @@ def mathParse(l, o):
         VISIBLE SUM OF 9 AN PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6                  BTW answer 0
         KTHXBYE
     '''
+    arg1 = tokens[2]
     arg2 = tokens[len(tokens) -1]
     ret = {
         "id" : calc_id(),
