@@ -179,7 +179,7 @@ def run():
 def mathParse(l, o):
     tokens = l.split() 
     operator = o
-    for i in (len(tokens)-4):
+    for i in (len(tokens)-4): #THIS NEEDS TO BE EDITED TO FIND THE CORRECT AN and recur both sides of it... not sure how to do that... 
         recur += tokens[i+2] + " " #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
     agr1 = parseLOL(recur)
     '''
@@ -232,7 +232,7 @@ def translate(c): #input the array w/ type and arguments
     pass
     #a bunch of if statements for dif command types...
 
-def overalFunc(filename):
+def overallFunc(filename):
     pass
     #this will put everything together, call the read command and then output the translated code??
 
