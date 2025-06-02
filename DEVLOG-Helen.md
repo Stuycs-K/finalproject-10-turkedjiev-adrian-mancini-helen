@@ -51,3 +51,7 @@ Possibly can use AST (what Adrian researched for this)?
 - used same recursive logic to find parts of a line that need to be parsed again for other commands
 - implemented LOLCODE parsing for variable assign, variable instantiate, print commands
 - also added mod to math
+
+### 2025-05-30 - 2025-06-2 - HOMEWORK: issues with math function
+- needs recursion on both sides of "AN" but need to find how to identify (when there are multiple "AN"s in a statement)
+
