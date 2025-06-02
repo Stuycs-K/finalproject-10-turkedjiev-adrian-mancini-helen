@@ -56,9 +56,10 @@ function
 
 '''
 
-global ast = []
-global latest_id = 0
-global latest_scope = 0
+global ast, latest_id, latest_scope
+ast = []
+latest_id = 0
+latest_scope = 0
 
 
 def calc_id():
@@ -70,11 +71,13 @@ def read(filename):
     return s
 
 def parseLOL(line):
+    global ast
     '''
     https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md
     '''
     prediction = ""
     bare_content = stripStatement(line)
+    ret = {}
     if bare_content == "":
         prediction += "empty line"
     if "HAI" in bare_content:
@@ -100,7 +103,8 @@ def parseLOL(line):
             # I HAS A <X> ITZ <3 + 4 / 2>
             tokens = line.split()
             variable_name = tokens[3]
-            for i in (len(tokens)-6):
+            recur = ""
+            for i in range(len(tokens)-6):
                 recur += tokens[i+6]  + " " #concatinates all from ITZ onwards with spaces between
             assigned_value = parseLOL(recur) 
             ret = {
@@ -125,7 +129,8 @@ def parseLOL(line):
     if " R " in bare_content:
         tokens = line.split()
         variable_name = tokens[0]
-        for i in (len(tokens)-index-2):
+        recur = ""
+        for i in range(len(tokens)-index-2):
             recur += tokens[i+index+2]  + " " #concatinates all after R
         assigned_value = parseLOL(recur)
         ret = {
@@ -139,9 +144,7 @@ def parseLOL(line):
     #are we including SRS, YARN & regular identifier?
     if "VISIBLE" in bare_content:
         tokens = line.split()
-        for i in (len(tokens)-1):
-            recur += tokens[i+1]
-        value = parseLOL(recur)
+        value = " ".join(tokens[1:])
         ret = {
             "id" : calc_id(),
             "original" : line,
@@ -196,10 +199,18 @@ def parseLOL(line):
         ...
     print(f'{line} ---> {prediction}')
 
-    return
+    return ret
+
+def run(s):
+    global ast
+    lines = s.splitlines()
+    for line in lines:
+        ast += [parseLOL(line)]
+    print_ast()
+    translate()
 
 def parseMulti(line):
-    
+    pass
 
 def run():
     global latest_scope
@@ -260,28 +271,44 @@ def stripStatement(statement):
     ret = ret.strip() # remove leading and trailing whitespace 
     return ret
 
-
 def checkCommand(s):
     #classify expressions, maybe output array [type, arguments...]
     return l
 
-def translate(c): #input the array w/ type and arguments
+def translate(): #input the array w/ type and arguments
+'''
+- each list entry is a dictionary = {
+    "id" : (give each statment a number, starting at 1)
+    "original" : (the original statement)
+    "type" : (one of a pre-set list of possible functionalities)
+    "arguments" : [literal_value, "variable name", expr(id)]
+    "body" : (dependent on the type, contains additional information)
+}
 
-    pass
-    #a bunch of if statements for dif command types...
+'''
+    global ast 
+    ret = ""
+    for dictionary in ast:
+        if dictionary == {}:
+            pass
+        else:
 
-def overallFunc(filename):
-    pass
-    #this will put everything together, call the read command and then output the translated code??
 
 
+        ret += '\n'
+    pass    #a bunch of if statements for dif command types...
 
-
+def print_ast():
+    global ast
+    print("AST:: [")
+    for dictionary in ast:
+        print(dictionary)
+    print("]")
 
 #### TESTING
 
 LOLCODE = read("sampleLOL_3.txt")
-parseLOL(LOLCODE)
+run(LOLCODE)
 
 # stripStatement("I HAS A VAR ITZ 12          BTW VAR = 12")
 # stripStatement('I HAS A name ITZ "var"')
