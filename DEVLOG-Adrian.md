@@ -41,3 +41,7 @@ This document must be updated daily every time you finish a work session.
     - Have so far ommitted the following aspects of LOLCODE: 
         - Function types are declared/initialized using the HOW DUZ I / IF U SAY SO blocks, however they behave the same as variables
         - The SRS operation can be used to interpret a YARN (or something castable to a YARN) as an identifier. This operator may be used anywhere that a regular identifier is expected.
+
+### 2025-06-02 - Building out translation to python
+
+- created translate() with helper translate_expression() to take AST dictionary and output string of python code. So far implemented for variable assignments / declarations, math and printing. 
