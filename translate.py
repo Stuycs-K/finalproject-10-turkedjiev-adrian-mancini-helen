@@ -14,8 +14,7 @@ ID corresponds to scope depth. EX:
 
                 CODE:                               IDS:
 
-def func(arg1, arg2):   
-    arg3 R 9                1
+def func(arg1, arg2):                   1
     arg1 += 4                           1.1 --> arg1 = (val)
                                         1.2 --> val = (arg1 + 4)
     if arg1 > arg2:                     1.3   
@@ -60,7 +59,6 @@ global ast, latest_id, latest_scope
 ast = []
 latest_id = 0
 latest_scope = 0
-
 
 def calc_id():
     return latest_id + (1 * 10**-latest_scope)
@@ -202,34 +200,23 @@ def parseLOL(line):
     return ret
 
 def run(s):
-    global ast
-    lines = s.splitlines()
-    for line in lines:
-        ast += [parseLOL(line)]
-    print_ast()
-    translate()
-
-def parseMulti(line):
-    pass
-
-def run():
-    global latest_scope
+    global latest_scope, ast
     lines = s.splitlines()
     for line in lines:
         leading_spaces = len(line) - len(line.lstrip())
         latest_scope = leading_spaces/4
-        if lastest_scope > 0:
-            parseMulti(line)
+        if latest_scope > 0:
+            pass
+            #parseMulti(line)
         else:
-        ast += parseLOL(line)
+            pass
+            ast += [parseLOL(line)]
+    #print_ast()
 
 #made a function to not repeat math code...
 def mathParse(l, o):
     tokens = l.split() 
     operator = o
-    #for i in (len(tokens)-4): #THIS NEEDS TO BE EDITED TO FIND THE CORRECT AN and recur both sides of it... not sure how to do that... 
-    #    recur += tokens[i+2] + " " #concatinates entire string between SUM OF [...] AN # (not sure if this will work..!
-    #agr1 = parseLOL(recur)
     '''
     Make sure to account for recursive case for inbetween SUM OF ... AN #
     EXAMPLE:
@@ -276,7 +263,7 @@ def checkCommand(s):
     return l
 
 def translate(): #input the array w/ type and arguments
-'''
+    '''
 - each list entry is a dictionary = {
     "id" : (give each statment a number, starting at 1)
     "original" : (the original statement)
@@ -285,17 +272,37 @@ def translate(): #input the array w/ type and arguments
     "body" : (dependent on the type, contains additional information)
 }
 
-'''
+    '''
     global ast 
-    ret = ""
+    ret = "STARTIN!!!\n"
     for dictionary in ast:
         if dictionary == {}:
             pass
         else:
-
-
+            print(dictionary)
+            temp_id = dictionary["id"]
+            temp_type = dictionary["type"]
+            temp_args = dictionary["arguments"]
+            ret += "    " * (len(str(temp_id).strip(".0")) - 1)
+            if temp_type == "declare":
+                ret += temp_args[0]
+            elif temp_type == "deallocate":
+                ret += f'temp_args[0] = None'
+            elif temp_type == "instatiate":
+                assigned_type = ""
+                match temp_args[1]:
+                    case "YARN":
+                        assigned_type = "String"
+                    case "NUMBR":
+                        assigned_type = "int"
+                    case "NUMBAR":
+                        assigned_type = "float"
+                    case "TROOF":
+                        assigned_type = "bool"
+                ret += f'assigned_type temp_args[0]'
 
         ret += '\n'
+    print(ret)
     pass    #a bunch of if statements for dif command types...
 
 def print_ast():
@@ -307,8 +314,9 @@ def print_ast():
 
 #### TESTING
 
-LOLCODE = read("sampleLOL_3.txt")
+LOLCODE = read("sampleLOL.txt")
 run(LOLCODE)
+translate()
 
 # stripStatement("I HAS A VAR ITZ 12          BTW VAR = 12")
 # stripStatement('I HAS A name ITZ "var"')
