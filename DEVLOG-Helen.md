@@ -52,6 +52,15 @@ Possibly can use AST (what Adrian researched for this)?
 - implemented LOLCODE parsing for variable assign, variable instantiate, print commands
 - also added mod to math
 
-### 2025-05-30 - 2025-06-2 - HOMEWORK: issues with math function
+### 2025-05-30 - 2025-06-1 - HOMEWORK: issues with math function
 - needs recursion on both sides of "AN" but need to find how to identify (when there are multiple "AN"s in a statement)
 
+### 2025-06-2 - parsing more types & parsing through multiline code
+- parsing through booleans with booleanParse(line)
+- parsing comments (BTW and OBTW)
+- create latest_multi_id to track the first line of a multiline piece of code
+- parseMulti() recursively calls parseLOL() for indented lines after ^
+
+### 2025-06-2 - HOMEWORK:
+- parse through loops, if statements, functions and calls, multiline comments
+- add to parseMulti()
