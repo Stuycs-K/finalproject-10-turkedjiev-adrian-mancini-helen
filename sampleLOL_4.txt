@@ -1,0 +1,10 @@
+HAI 1.2
+VISIBLE "Hi this is the first line of the code"
+I HAS A str1 ITZ A YARN
+str1 R "hello this is the first variable"
+VISIBLE str1
+I HAS A int1 ITZ 32
+SUM OF int1 AN 4
+PRODUKT OF int1 AN 5
+VISIBLE int1
+KTHXBYE

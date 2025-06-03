@@ -38,7 +38,6 @@ assign
 math
     "arguments" : ["operator", "argument_1", "argument_2"]
 
-
 print
     "arguments" : ["value"]
 
@@ -61,7 +60,11 @@ loop
 function
     "arguments" : ["function_name", "variable1", "variable2", "content"]
 
+literal
+    "arguments" : ["value"]
 '''
+
+#~~~~~~~~~~~ SET UP ~~~~~~~~~~~#
 
 global ast, latest_id, latest_multi_id, latest_scope
 ast = []
@@ -70,194 +73,26 @@ latest_multi_id = 0
 latest_scope = 0
 
 def calc_id():
+    global latest_id, latest_scope
     return latest_id + (1 * 10**-latest_scope)
+
 
 def read(filename):
     f = open(filename, "r") #does this work for python files? will newlines and indents '\t' be read into the string?
     s = f.read()
     return s
 
-def parseLOL(line):
+
+def print_ast():
     global ast
-    '''
-    https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md
-    '''
-    prediction = ""
-    bare_content = stripStatement(line)
-    ret = {}
-    if bare_content == "":
-        prediction += "empty line"
-    if "HAI" in bare_content:
-        #should this have a dictionary entry if no arguments?
-        prediction += "start of file; ignore"
-    if "KTHXBYE" in bare_content:
-        prediction += "end of file; ignore"
-    if "I HAS A" in bare_content:
-        if "ITZ A" in bare_content:
-            # I HAS A <x> ITZ A <y>
-            tokens = line.split()
-            variable_name = tokens[3]
-            assigned_type = tokens[6]
-            ret = {
-                "id" : calc_id(),
-                "original" : line,
-                "type" : "instatiate",
-                "arguments" : [variable_name, assigned_type],
-                "body" : []
-            }
-            prediction += "instantiates and gives it a type"
-        elif "ITZ" in bare_content:
-            # I HAS A <X> ITZ <3 + 4 / 2>
-            tokens = line.split()
-            variable_name = tokens[3]
-            recur = ""
-            for i in range(len(tokens)-6):
-                recur += tokens[i+6]  + " " #concatinates all from ITZ onwards with spaces between
-            assigned_value = parseLOL(recur) 
-            ret = {
-                "id" : calc_id(),
-                "original" : line,
-                "type" : "assign",
-                "arguments" : [variable_name, assigned_value],
-                "body" : []
-            }
-            prediction += "assigns value to variable"
-        else:
-            tokens = line.split()
-            variable_name = tokens[3]
-            ret = {
-                "id" : calc_id(),
-                "original" : line,
-                "type" : "declare",
-                "arguments" : [variable_name],
-                "body" : []
-            }
-            prediction += "declares a variable "
-    if " R " in bare_content:
-        tokens = line.split()
-        variable_name = tokens[0]
-        recur = ""
-        for i in range(len(tokens)-index-2):
-            recur += tokens[i+index+2]  + " " #concatinates all after R
-        assigned_value = parseLOL(recur)
-        ret = {
-            "id" : calc_id(),
-            "original" : line,
-            "type" : "assign", #this is the same type as initializing and assigning-- is that okay...
-            "arguments" : [variable_name, assigned_value], 
-            "body" : []
-        }    
-        prediction += "assinging value to variable"
-    #are we including SRS, YARN & regular identifier?
-    if "VISIBLE" in bare_content:
-        tokens = line.split()
-        value = " ".join(tokens[1:])
-        ret = {
-            "id" : calc_id(),
-            "original" : line,
-            "type" : "print",
-            "arguments" : [value],
-            "body" : []
-        }
-    #MATH
-    if "SUM OF" in bare_content:
-        ret = mathParse(line, "+")
-        prediction += "addition"
-    if "DIFF OF" in bare_content:
-        ret = mathParse(line, "-")
-        prediction += "subtraction"
-    if "PRODUKT OF" in bare_content:
-        ret = mathParse(line, "*")
-        prediction += "multiplication"
-    if "QUOSHUNT OF" in bare_content:
-        ret = mathParse(line, "/")
-        prediction += "division"
-    if "MOD OF" in bare_content:
-        ret = mathParse(line, "%")
-        prediction += "mod"
-    if "BIGGR OF" in bare_content:
-        ret = mathParse(line, ">")
-        prediction += "min"
-    if "SMALLR OF" in bare_content:
-        ret = mathParse(line, "<")
-        prediction += "max"
-    #COMMENTS
-    if "BTW " in bare_content:
-        content = line[4:]
-        ret = {
-            "id" : calc_id(),
-            "original" : line,
-            "type" : "comment",
-            "arguments" : [content], 
-            "body" : []
-            }
-    if "OBTW" in bare_content:
-        content = []
-        content[0] = line[5:]
-        ret = {
-            "id" : calc_id(),
-            "original" : line,
-            "type" : "comment",
-            "arguments" : [content], 
-            "body" : []
-            }
-    if "IM IN YR" in bare_content:
-        ...
-    if "HOW IZ I" in bare_content:
-        ...
-    #BOOLEAN
-    if "BOTH OF" in bare_content:
-        ret = booleanParse(line, "and")
-    if "EITHER OF" in bare_content:
-        ret = booleanParse(line, "or")
-    if "WON OF" in bare_content:
-        ret = booleanParse(line, "xor")
-    if "NOT" in bare_content:
-        arg1 = tokens[1]
-        ret = {
-            "id" : calc_id(),
-            "original" : line,
-            "type" : "boolean",
-            "arguments" : [operator, arg1],
-            "body" : []
-            }
-    #COMPARISON --> if statements
-    if "BOTH SAEM" in bare_content:
-        
-    if "DIFFRINT" in bare_content:
-        
-        
-    print(f'{line} ---> {prediction}')
-
-    return ret
-
-
-def parseMulti(line):
-    global latest_multi_id
+    print("AST:: [")
     for dictionary in ast:
-        if dictionary == {}:
-            pass
-        else:
-            if dictionary["id"] = lastest_multi_id:
-                if dictionary["type"] == "comment":
-                    dictionary["arguments"] += line
-                if dictionary["type"] == "":
-                    pass
-            
-    pass
+        print(dictionary)
+    print("]")
 
-def run():
-    global latest_scope, ast
-    lines = s.splitlines()
-    for line in lines:
-        leading_spaces = len(line) - len(line.lstrip())
-        latest_scope = leading_spaces/4
-        if latest_scope > 0:
-            pass
-            #parseMulti(line)
-        else:
-            ast += [parseLOL(line)]
-    #print_ast()
+
+#~~~~~~~~~~~ PARSE LOLCODE ~~~~~~~~~~~#
+
 
 def mathParse(l, o):
     tokens = l.split() 
@@ -274,14 +109,14 @@ def mathParse(l, o):
     arg2 = tokens[4]
     ret = {
         "id" : calc_id(),
-        "original" : line,
+        "original" : l,
         "type" : "math",
         "arguments" : [operator, arg1, arg2],
         "body" : []
         }
     return ret
 
-#made a function to not repeat math code...
+
 def booleanParse(l, o):
     tokens = l.split() 
     operator = o
@@ -295,6 +130,7 @@ def booleanParse(l, o):
         "body" : []
         }
     return ret
+
 
 def stripStatement(statement):
     '''
@@ -318,11 +154,183 @@ def stripStatement(statement):
     ret = ret.strip() # remove leading and trailing whitespace 
     return ret
 
-def checkCommand(s):
-    #classify expressions, maybe output array [type, arguments...]
-    return l
 
-def translate(): #input the array w/ type and arguments
+def parseMulti(line):
+    global latest_multi_id
+    for dictionary in ast:
+        if dictionary == {}:
+            pass
+        else:
+            if dictionary["id"] == lastest_multi_id:
+                if dictionary["type"] == "comment":
+                    dictionary["arguments"] += line
+                if dictionary["type"] == "":
+                    pass      
+    pass
+
+
+def parseLOL(line):
+    global ast
+    '''
+    https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md
+    '''
+    prediction = ""
+    bare_content = stripStatement(line)
+    ret = {}
+    if bare_content == "":
+        prediction += "empty line"
+    if "HAI" in bare_content:
+        #should this have a dictionary entry if no arguments?
+        prediction += "start of file; ignore"
+    elif "KTHXBYE" in bare_content:
+        prediction += "end of file; ignore"
+    elif "I HAS A" in bare_content:
+        if "ITZ A" in bare_content:
+            # I HAS A <x> ITZ A <y>
+            tokens = line.split()
+            variable_name = tokens[3]
+            assigned_type = tokens[6]
+            ret = {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "instatiate",
+                "arguments" : [variable_name, assigned_type],
+                "body" : []
+            }
+            prediction += "instantiates and gives it a type"
+        elif "ITZ" in bare_content:
+            # I HAS A <X> ITZ <3 + 4 / 2>
+            tokens = line.split()
+            variable_name = tokens[3]
+            recur = " ".join(tokens[5:])
+            assigned_value = parseLOL(recur) 
+            ret = {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "assign",
+                "arguments" : [variable_name, assigned_value],
+                "body" : []
+            }
+            prediction += "assigns value to variable"
+        else:
+            tokens = line.split()
+            variable_name = tokens[3]
+            ret = {
+                "id" : calc_id(),
+                "original" : line,
+                "type" : "declare",
+                "arguments" : [variable_name],
+                "body" : []
+            }
+            prediction += "declares a variable "
+    elif " R " in bare_content:
+        tokens = line.split()
+        variable_name = tokens[0]
+        recur = " ".join(tokens[2:])
+        assigned_value = parseLOL(recur)
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "assign", #this is the same type as initializing and assigning-- is that okay...
+            "arguments" : [variable_name, assigned_value], 
+            "body" : []
+        }    
+        prediction += "assinging value to variable"
+    #are we including SRS, YARN & regular identifier?
+    elif "VISIBLE" in bare_content:
+        tokens = line.split()
+        value = " ".join(tokens[1:])
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "print",
+            "arguments" : [value],
+            "body" : []
+        }
+    #MATH
+    elif "SUM OF" in bare_content:
+        ret = mathParse(line, "+")
+        prediction += "addition"
+    elif "DIFF OF" in bare_content:
+        ret = mathParse(line, "-")
+        prediction += "subtraction"
+    elif "PRODUKT OF" in bare_content:
+        ret = mathParse(line, "*")
+        prediction += "multiplication"
+    elif "QUOSHUNT OF" in bare_content:
+        ret = mathParse(line, "/")
+        prediction += "division"
+    elif "MOD OF" in bare_content:
+        ret = mathParse(line, "%")
+        prediction += "mod"
+    elif "BIGGR OF" in bare_content:
+        ret = mathParse(line, ">")
+        prediction += "min"
+    elif "SMALLR OF" in bare_content:
+        ret = mathParse(line, "<")
+        prediction += "max"
+    #COMMENTS
+    elif "BTW " in bare_content:
+        content = line[4:]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "comment",
+            "arguments" : [content], 
+            "body" : []
+            }
+    elif "OBTW" in bare_content:
+        content = []
+        content[0] = line[5:]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "comment",
+            "arguments" : [content], 
+            "body" : []
+            }
+    elif "IM IN YR" in bare_content:
+        ...
+    elif "HOW IZ I" in bare_content:
+        ...
+    #BOOLEAN
+    elif "BOTH OF" in bare_content:
+        ret = booleanParse(line, "and")
+    elif "EITHER OF" in bare_content:
+        ret = booleanParse(line, "or")
+    elif "WON OF" in bare_content:
+        ret = booleanParse(line, "xor")
+    elif "NOT" in bare_content:
+        arg1 = tokens[1]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "boolean",
+            "arguments" : [operator, arg1],
+            "body" : []
+            }
+    #COMPARISON --> if statements
+    elif "BOTH SAEM" in bare_content:
+        pass
+    elif "DIFFRINT" in bare_content:
+        pass
+    else:
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "literal",
+            "arguments" : [line],
+            "body" : []
+        }
+        
+    #print(f'{line} ---> {prediction}')
+
+    return ret
+
+#~~~~~~~~~~~ TRANSLATE TO PYTHON ~~~~~~~~~~~#
+
+
+def translate(): 
     '''
 - each list entry is a dictionary = {
     "id" : (give each statment a number, starting at 1)
@@ -334,12 +342,12 @@ def translate(): #input the array w/ type and arguments
 
     '''
     global ast 
-    ret = "STARTIN!!!\n"
+    ret = ""
     for dictionary in ast:
         if dictionary == {}:
             pass
         else:
-            print(dictionary)
+            #print(dictionary)
             temp_id = dictionary["id"]
             temp_type = dictionary["type"]
             temp_args = dictionary["arguments"]
@@ -347,7 +355,7 @@ def translate(): #input the array w/ type and arguments
             if temp_type == "declare":
                 ret += temp_args[0]
             elif temp_type == "deallocate":
-                ret += f'temp_args[0] = None'
+                ret += f'{temp_args[0]} = None'
             elif temp_type == "instatiate":
                 assigned_type = ""
                 match temp_args[1]:
@@ -359,25 +367,42 @@ def translate(): #input the array w/ type and arguments
                         assigned_type = "float"
                     case "TROOF":
                         assigned_type = "bool"
-                ret += f'assigned_type temp_args[0]'
-
+                ret += f'{assigned_type} {temp_args[0]}'
+            elif temp_type == "assign":
+                assigned_value = translate_expression(temp_args[1])
+                ret += f'{temp_args[0]} = {assigned_value}'
+            elif temp_type == "math":
+                ret += f'{temp_args[1]} {temp_args[0]}  {temp_args[2]}'
+            elif temp_type == "print":
+                ret += f'print({temp_args[0]})'
         ret += '\n'
     print(ret)
-    pass    #a bunch of if statements for dif command types...
 
-def print_ast():
-    global ast
-    print("AST:: [")
-    for dictionary in ast:
-        print(dictionary)
-    print("]")
+def translate_expression(dictionary):
+    if dictionary["type"] == "literal":
+        return dictionary["arguments"][0]
+    else:
+        return ""
 
-#### TESTING
+#~~~~~~~~~~~ RUN ~~~~~~~~~~~#
 
-LOLCODE = read("sampleLOL.txt")
+def run(s):
+    global latest_scope, ast
+    lines = s.splitlines()
+    for line in lines:
+        leading_spaces = len(line) - len(line.lstrip())
+        latest_scope = leading_spaces/4
+        if latest_scope > 0:
+            pass
+            #parseMulti(line)
+        else:
+            ast += [parseLOL(line)]
+
+#~~~~~~~~~~~ TESTING ~~~~~~~~~~~#
+
+
+LOLCODE = read("sampleLOL_4.txt")
+print(f'ORIGINAL::\n\n{LOLCODE}')
 run(LOLCODE)
+print('-------\nTRANSLATED::')
 translate()
-
-# stripStatement("I HAS A VAR ITZ 12          BTW VAR = 12")
-# stripStatement('I HAS A name ITZ "var"')
-# stripStatement('I Has A misleading_variable ITZ "KTHXBYE" AND ITS AWESOME')
