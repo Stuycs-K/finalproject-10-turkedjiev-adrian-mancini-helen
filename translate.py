@@ -38,14 +38,22 @@ assign
 math
     "arguments" : ["operator", "argument_1", "argument_2"]
 
-comment
-    "arguments" : ["content"]
 
 print
     "arguments" : ["value"]
 
-if
-    "arguments" : ["condition", "content"]
+boolean
+    "arguments" : ["operator", "argument_1", "argument_2"]
+    
+MULTILINE:
+
+comment
+    "arguments" : ["content"]
+    
+comparison
+    "arguments" : ["operator", "argument_1", "argument_2"]
+    
+--> if statements...
 
 loop
     "arguments" : ["condition", "content"]
@@ -55,9 +63,10 @@ function
 
 '''
 
-global ast, latest_id, latest_scope
+global ast, latest_id, latest_multi_id, latest_scope
 ast = []
 latest_id = 0
+latest_multi_id = 0
 latest_scope = 0
 
 def calc_id():
@@ -183,6 +192,7 @@ def parseLOL(line):
             "body" : []
             }
     if "OBTW" in bare_content:
+        content = []
         content[0] = line[5:]
         ret = {
             "id" : calc_id(),
@@ -195,11 +205,48 @@ def parseLOL(line):
         ...
     if "HOW IZ I" in bare_content:
         ...
+    #BOOLEAN
+    if "BOTH OF" in bare_content:
+        ret = booleanParse(line, "and")
+    if "EITHER OF" in bare_content:
+        ret = booleanParse(line, "or")
+    if "WON OF" in bare_content:
+        ret = booleanParse(line, "xor")
+    if "NOT" in bare_content:
+        arg1 = tokens[1]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "boolean",
+            "arguments" : [operator, arg1],
+            "body" : []
+            }
+    #COMPARISON --> if statements
+    if "BOTH SAEM" in bare_content:
+        
+    if "DIFFRINT" in bare_content:
+        
+        
     print(f'{line} ---> {prediction}')
 
     return ret
 
-def run(s):
+
+def parseMulti(line):
+    global latest_multi_id
+    for dictionary in ast:
+        if dictionary == {}:
+            pass
+        else:
+            if dictionary["id"] = lastest_multi_id:
+                if dictionary["type"] == "comment":
+                    dictionary["arguments"] += line
+                if dictionary["type"] == "":
+                    pass
+            
+    pass
+
+def run():
     global latest_scope, ast
     lines = s.splitlines()
     for line in lines:
@@ -209,11 +256,9 @@ def run(s):
             pass
             #parseMulti(line)
         else:
-            pass
             ast += [parseLOL(line)]
     #print_ast()
 
-#made a function to not repeat math code...
 def mathParse(l, o):
     tokens = l.split() 
     operator = o
@@ -226,11 +271,26 @@ def mathParse(l, o):
         KTHXBYE
     '''
     arg1 = tokens[2]
-    arg2 = tokens[len(tokens) -1]
+    arg2 = tokens[4]
     ret = {
         "id" : calc_id(),
         "original" : line,
         "type" : "math",
+        "arguments" : [operator, arg1, arg2],
+        "body" : []
+        }
+    return ret
+
+#made a function to not repeat math code...
+def booleanParse(l, o):
+    tokens = l.split() 
+    operator = o
+    arg1 = tokens[2]
+    arg2 = tokens[4]
+    ret = {
+        "id" : calc_id(),
+        "original" : line,
+        "type" : "boolean",
         "arguments" : [operator, arg1, arg2],
         "body" : []
         }
