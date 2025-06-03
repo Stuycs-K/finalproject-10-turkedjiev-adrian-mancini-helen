@@ -48,17 +48,18 @@ MULTILINE:
 
 comment
     "arguments" : ["content"]
+
+conditional
+    "arguments" : ["operator", "argument_1", "argument_2", "content"]
     
-comparison
-    "arguments" : ["operator", "argument_1", "argument_2"]
-    
---> if statements...
+if-else
+    "arguments" : ["if_or_else", "command_1", "command_2", "command_3"]
 
 loop
-    "arguments" : ["condition", "content"]
+    "arguments" : ["operation", "variable", "limit", "content"]
     
 function
-    "arguments" : ["function_name", "variable1", "variable2", "content"]
+    "arguments" : ["def_or_call", "function_name", "argument_1", "argument_2", "content"]
 
 literal
     "arguments" : ["value"]
@@ -154,21 +155,6 @@ def stripStatement(statement):
     ret = ret.strip() # remove leading and trailing whitespace 
     return ret
 
-
-def parseMulti(line):
-    global latest_multi_id
-    for dictionary in ast:
-        if dictionary == {}:
-            pass
-        else:
-            if dictionary["id"] == lastest_multi_id:
-                if dictionary["type"] == "comment":
-                    dictionary["arguments"] += line
-                if dictionary["type"] == "":
-                    pass      
-    pass
-
-
 def parseLOL(line):
     global ast
     '''
@@ -180,7 +166,6 @@ def parseLOL(line):
     if bare_content == "":
         prediction += "empty line"
     if "HAI" in bare_content:
-        #should this have a dictionary entry if no arguments?
         prediction += "start of file; ignore"
     elif "KTHXBYE" in bare_content:
         prediction += "end of file; ignore"
@@ -269,6 +254,23 @@ def parseLOL(line):
     elif "SMALLR OF" in bare_content:
         ret = mathParse(line, "<")
         prediction += "max"
+    #BOOLEAN
+    elif "BOTH OF" in bare_content:
+        ret = booleanParse(line, "and")
+    elif "EITHER OF" in bare_content:
+        ret = booleanParse(line, "or")
+    elif "WON OF" in bare_content:
+        ret = booleanParse(line, "xor")
+    elif "NOT" in bare_content:
+        tokens = line.split()
+        arg1 = tokens[1]
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "boolean",
+            "arguments" : [operator, arg1],
+            "body" : []
+            }
     #COMMENTS
     elif "BTW " in bare_content:
         content = line[4:]
@@ -289,30 +291,105 @@ def parseLOL(line):
             "arguments" : [content], 
             "body" : []
             }
-    elif "IM IN YR" in bare_content:
-        ...
-    elif "HOW IZ I" in bare_content:
-        ...
-    #BOOLEAN
-    elif "BOTH OF" in bare_content:
-        ret = booleanParse(line, "and")
-    elif "EITHER OF" in bare_content:
-        ret = booleanParse(line, "or")
-    elif "WON OF" in bare_content:
-        ret = booleanParse(line, "xor")
-    elif "NOT" in bare_content:
-        arg1 = tokens[1]
+    elif "IM IN YR" in bare_content: #JUST DOING TWO TYPES: UPPIN (increment by one) and NERFIN (decrement by one AKA range(10, 0, -1)
+        tokens = line.split()
+        operation = token[4] #UPPIN or NERFIN
+        variable = token[6]
+        limit = token[12] #assuming every loop ends with BOTH SAEM condition
+        content = []
         ret = {
             "id" : calc_id(),
             "original" : line,
-            "type" : "boolean",
-            "arguments" : [operator, arg1],
+            "type" : "loop",
+            "arguments" : [operation, variable, limit, content], 
             "body" : []
             }
-    #COMPARISON --> if statements
-    elif "BOTH SAEM" in bare_content:
+    elif "IM OUTTA YR" in bare_content:
+        #ignore, not in python...
         pass
-    elif "DIFFRINT" in bare_content:
+    elif "HOW IZ I" in bare_content: #limited to two arguments!
+        tokens = line.split()
+        def_or_call = "def"
+        function_name = token[3]
+        if "[YR" in bare_content:
+            argument_1 = token[5] #after [YR
+        if "[AN YR" in bare_content:
+            argument_2 = token[8] #after [AN YR
+        content = []
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "function",
+            "arguments" : [def_or_call, function_name, argument_1, argument_2, content], 
+            "body" : []
+            }
+    elif "I IZ" in bare_content:
+        tokens = line.split()
+        def_or_call = "call"
+        function_name = token[2]
+        if "[YR" in bare_content:
+            argument_1 = token[4] #after [YR
+        if "[AN YR" in bare_content:
+            argument_2 = token[7] #after [AN YR
+        ret = {
+            "id" : calc_id(),
+            "original" : line,
+            "type" : "function",
+            "arguments" : [def_or_call, function_name, argument_1, argument_2], #doesn't have content because call
+            "body" : []
+            }
+    elif "FOUND YR" in bare_content: #return statement, in the multiline...
+        pass
+    elif "IF U SAY SO" in bare_content:
+        #ignore, ends function
+        pass
+    #COMPARISON --> if statements
+    elif "OH RLY" in bare_content:
+        tokens = line.split()
+        content = []
+        if "BOTH SAEM" in bare_content:
+            operator = "=="
+            argument_1 = tokens[2]
+            argument_2 = tokens[4]
+        else if "DIFFRINT" in bare_content:
+            operator = "!="
+            argument_1 = tokens[1]
+            argument_2 = tokens[2]
+        ret = {
+            "id" : calc_id()
+            "original" : line
+            "type" : "conditional"
+            "arguments" : [operation, argument_1, argument_2, content]
+            "body" : []
+            }
+    elif "YA RLY" in bare_content: #THREE COMMANDS POSSIBLE... 
+        if_or_else = "if"
+        commands = line.split(",")
+        command_1 = parseLOL(commands[1])
+        command_2 = parseLOL(commands[2])
+        command_3 = parseLOL(commands[3])
+        ret = {
+        "id" : calc_id()
+        "original" : line
+        "type" : "if-else"
+        "arguments" : [if_or_else, command_1, command_2, command_3]
+        "body" : []
+        }
+    elif "NO WAI" in bare_content: 
+        if_or_else = "else"
+        commands = line.split(",")
+        command_1 = parseLOL(commands[1]) #not sure if this will work... 
+        command_2 = parseLOL(commands[2])
+        command_3 = parseLOL(commands[3])
+        ret = {
+        "id" : calc_id()
+        "original" : line
+        "type" : "if-else"
+        "arguments" : [if_or_else, command_1, command_2, command_3]
+        "body" : []
+        }
+    elif "OIC" in bare_content:
+        #ignore, if statement ended
         pass
     else:
         ret = {
@@ -326,6 +403,20 @@ def parseLOL(line):
     #print(f'{line} ---> {prediction}')
 
     return ret
+
+def parseMulti(line):
+    global latest_multi_id, ast
+    for dictionary in ast:
+        if dictionary == {}:
+            pass
+        else:
+            if dictionary["id"] == lastest_multi_id:
+                if dictionary["type"] == "comment":
+                    dictionary["content"] += line
+                if dictionary["type"] == "loop" or dictionary["type"] == "function" or dictionary["type"]:
+                    dictionary["content"] += parseLOL(line)
+    pass
+
 
 #~~~~~~~~~~~ TRANSLATE TO PYTHON ~~~~~~~~~~~#
 
@@ -347,7 +438,7 @@ def translate():
         if dictionary == {}:
             pass
         else:
-            #print(dictionary)
+            print(dictionary)
             temp_id = dictionary["id"]
             temp_type = dictionary["type"]
             temp_args = dictionary["arguments"]
@@ -395,8 +486,8 @@ def run(s):
         leading_spaces = len(line) - len(line.lstrip())
         latest_scope = leading_spaces/4
         if latest_scope > 0:
-            pass
-            #parseMulti(line)
+            #pass
+            parseMulti(line)
         else:
             ast += [parseLOL(line)]
 
