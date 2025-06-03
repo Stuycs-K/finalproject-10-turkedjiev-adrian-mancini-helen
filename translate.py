@@ -381,6 +381,8 @@ def translate():
 def translate_expression(dictionary):
     if dictionary["type"] == "literal":
         return dictionary["arguments"][0]
+    elif dictionary["type"] == "math":
+        return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}  {dictionary["arguments"][2]}'
     else:
         return ""
 
