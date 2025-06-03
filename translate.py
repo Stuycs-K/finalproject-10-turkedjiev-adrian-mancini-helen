@@ -96,6 +96,7 @@ def print_ast():
 
 
 def mathParse(l, o):
+    global latest_id
     tokens = l.split() 
     operator = o
     '''
@@ -108,8 +109,9 @@ def mathParse(l, o):
     '''
     arg1 = tokens[2]
     arg2 = tokens[4]
+    latest_id = calc_id()
     ret = {
-        "id" : calc_id(),
+        "id" : latest_id,
         "original" : l,
         "type" : "math",
         "arguments" : [operator, arg1, arg2],
@@ -119,12 +121,14 @@ def mathParse(l, o):
 
 
 def booleanParse(l, o):
+    global latest_id
     tokens = l.split() 
     operator = o
     arg1 = tokens[2]
     arg2 = tokens[4]
+    latest_id = calc_id()
     ret = {
-        "id" : calc_id(),
+        "id" : latest_id,
         "original" : line,
         "type" : "boolean",
         "arguments" : [operator, arg1, arg2],
@@ -156,7 +160,7 @@ def stripStatement(statement):
     return ret
 
 def parseLOL(line):
-    global ast
+    global latest_id, ast
     '''
     https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md
     '''
@@ -175,8 +179,9 @@ def parseLOL(line):
             tokens = line.split()
             variable_name = tokens[3]
             assigned_type = tokens[6]
+            latest_id = calc_id()
             ret = {
-                "id" : calc_id(),
+                "id" : latest_id,
                 "original" : line,
                 "type" : "instatiate",
                 "arguments" : [variable_name, assigned_type],
@@ -189,8 +194,9 @@ def parseLOL(line):
             variable_name = tokens[3]
             recur = " ".join(tokens[5:])
             assigned_value = parseLOL(recur) 
+            latest_id = calc_id()
             ret = {
-                "id" : calc_id(),
+                "id" : latest_id,
                 "original" : line,
                 "type" : "assign",
                 "arguments" : [variable_name, assigned_value],
@@ -200,8 +206,9 @@ def parseLOL(line):
         else:
             tokens = line.split()
             variable_name = tokens[3]
+            latest_id = calc_id()
             ret = {
-                "id" : calc_id(),
+                "id" : latest_id ,
                 "original" : line,
                 "type" : "declare",
                 "arguments" : [variable_name],
@@ -213,8 +220,9 @@ def parseLOL(line):
         variable_name = tokens[0]
         recur = " ".join(tokens[2:])
         assigned_value = parseLOL(recur)
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "assign", #this is the same type as initializing and assigning-- is that okay...
             "arguments" : [variable_name, assigned_value], 
@@ -225,8 +233,9 @@ def parseLOL(line):
     elif "VISIBLE" in bare_content:
         tokens = line.split()
         value = " ".join(tokens[1:])
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "print",
             "arguments" : [value],
@@ -264,8 +273,9 @@ def parseLOL(line):
     elif "NOT" in bare_content:
         tokens = line.split()
         arg1 = tokens[1]
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "boolean",
             "arguments" : [operator, arg1],
@@ -274,8 +284,9 @@ def parseLOL(line):
     #COMMENTS
     elif "BTW " in bare_content:
         content = line[4:]
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "comment",
             "arguments" : [content], 
@@ -284,8 +295,9 @@ def parseLOL(line):
     elif "OBTW" in bare_content:
         content = []
         content[0] = line[5:]
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "comment",
             "arguments" : [content], 
@@ -293,12 +305,13 @@ def parseLOL(line):
             }
     elif "IM IN YR" in bare_content: #JUST DOING TWO TYPES: UPPIN (increment by one) and NERFIN (decrement by one AKA range(10, 0, -1)
         tokens = line.split()
-        operation = token[4] #UPPIN or NERFIN
-        variable = token[6]
-        limit = token[12] #assuming every loop ends with BOTH SAEM condition
+        operation = tokens[4] #UPPIN or NERFIN
+        variable = tokens[6]
+        limit = tokens[12] #assuming every loop ends with BOTH SAEM condition
         content = []
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "loop",
             "arguments" : [operation, variable, limit, content], 
@@ -310,14 +323,15 @@ def parseLOL(line):
     elif "HOW IZ I" in bare_content: #limited to two arguments!
         tokens = line.split()
         def_or_call = "def"
-        function_name = token[3]
+        function_name = tokens[3]
         if "[YR" in bare_content:
-            argument_1 = token[5] #after [YR
+            argument_1 = tokens[5] #after [YR
         if "[AN YR" in bare_content:
-            argument_2 = token[8] #after [AN YR
+            argument_2 = tokens[8] #after [AN YR
         content = []
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "function",
             "arguments" : [def_or_call, function_name, argument_1, argument_2, content], 
@@ -326,13 +340,15 @@ def parseLOL(line):
     elif "I IZ" in bare_content:
         tokens = line.split()
         def_or_call = "call"
-        function_name = token[2]
+        function_name = tokens[2]
         if "[YR" in bare_content:
-            argument_1 = token[4] #after [YR
+            argument_1 = tokens[4] #after [YR
         if "[AN YR" in bare_content:
-            argument_2 = token[7] #after [AN YR
+            argument_2 = tokens[7] #after [AN YR
+        content = []
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "function",
             "arguments" : [def_or_call, function_name, argument_1, argument_2], #doesn't have content because call
@@ -351,29 +367,31 @@ def parseLOL(line):
             operator = "=="
             argument_1 = tokens[2]
             argument_2 = tokens[4]
-        else if "DIFFRINT" in bare_content:
+        elif "DIFFRINT" in bare_content:
             operator = "!="
             argument_1 = tokens[1]
             argument_2 = tokens[2]
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id()
-            "original" : line
-            "type" : "conditional"
-            "arguments" : [operation, argument_1, argument_2, content]
+            "id" : latest_id,
+            "original" : line,
+            "type" : "conditional",
+            "arguments" : [operation, argument_1, argument_2, content],
             "body" : []
             }
     elif "YA RLY" in bare_content: #THREE COMMANDS POSSIBLE... 
         if_or_else = "if"
         commands = line.split(",")
         command_1 = parseLOL(commands[1])
-        command_2 = parseLOL(commands[2])
+        command_2 = parseLOL(commands[2]) #FIX...
         command_3 = parseLOL(commands[3])
+        latest_id = calc_id()
         ret = {
-        "id" : calc_id()
-        "original" : line
-        "type" : "if-else"
-        "arguments" : [if_or_else, command_1, command_2, command_3]
-        "body" : []
+            "id" : latest_id,
+            "original" : line,
+            "type" : "if-else",
+            "arguments" : [if_or_else, command_1, command_2, command_3],
+            "body" : []
         }
     elif "NO WAI" in bare_content: 
         if_or_else = "else"
@@ -381,19 +399,21 @@ def parseLOL(line):
         command_1 = parseLOL(commands[1]) #not sure if this will work... 
         command_2 = parseLOL(commands[2])
         command_3 = parseLOL(commands[3])
+        latest_id = calc_id()
         ret = {
-        "id" : calc_id()
-        "original" : line
-        "type" : "if-else"
-        "arguments" : [if_or_else, command_1, command_2, command_3]
-        "body" : []
+            "id" : latest_id,
+            "original" : line,
+            "type" : "if-else",
+            "arguments" : [if_or_else, command_1, command_2, command_3],
+            "body" : []
         }
     elif "OIC" in bare_content:
         #ignore, if statement ended
         pass
     else:
+        latest_id = calc_id()
         ret = {
-            "id" : calc_id(),
+            "id" : latest_id,
             "original" : line,
             "type" : "literal",
             "arguments" : [line],
@@ -410,11 +430,15 @@ def parseMulti(line):
         if dictionary == {}:
             pass
         else:
-            if dictionary["id"] == lastest_multi_id:
+            print(dictionary["id"])
+            if dictionary["id"] == latest_multi_id:
                 if dictionary["type"] == "comment":
-                    dictionary["content"] += line
+                    dictionary["arguments"][3] += line
                 if dictionary["type"] == "loop" or dictionary["type"] == "function" or dictionary["type"]:
-                    dictionary["content"] += parseLOL(line)
+                    print(line)
+                    print(parseLOL(line))
+                    dictionary["arguments"][3] += parseLOL(line)
+                #needs if-else
     pass
 
 
@@ -480,13 +504,14 @@ def translate_expression(dictionary):
 #~~~~~~~~~~~ RUN ~~~~~~~~~~~#
 
 def run(s):
-    global latest_scope, ast
+    global latest_id, latest_multi_id, latest_scope, ast
     lines = s.splitlines()
     for line in lines:
         leading_spaces = len(line) - len(line.lstrip())
         latest_scope = leading_spaces/4
         if latest_scope > 0:
-            #pass
+            latest_multi_id = latest_id
+            print(latest_multi_id)
             parseMulti(line)
         else:
             ast += [parseLOL(line)]
@@ -494,7 +519,7 @@ def run(s):
 #~~~~~~~~~~~ TESTING ~~~~~~~~~~~#
 
 
-LOLCODE = read("sampleLOL_4.txt")
+LOLCODE = read("sampleLOL.txt")
 print(f'ORIGINAL::\n\n{LOLCODE}')
 run(LOLCODE)
 print('-------\nTRANSLATED::')
