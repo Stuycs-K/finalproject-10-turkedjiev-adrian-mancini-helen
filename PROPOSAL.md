@@ -6,22 +6,27 @@ Helen Mancini and Adrian Turkedjiev
 
 # Intentions:
 
-LOLCODE (eso-lang) language interpreter for a subset of python
+LOLCODE (esoteric internet meme language) to Python translator and interpretor. 
 
 # Intended usage:
 
-TBD...
+This translator is intended to deobfuscate code from an esoteric language, LOLCODE, into runnable Python code. 
 
 # Technical Details:
 
-TBD...
+This project will entail breaking down LOLCODE into syntax trees and using them to peice code back together as Python.
 
-Topics from class: Reading and encoding/interpreting files, code obfuscation...
-     
-Adrian will do...
+Topics from class: Esoteric coding languages, code Obfuscation/Deobfuscation, make recipe/bash scripts
 
-Helen will do...
+Helen will do research and work primarily on writing LOLCODE and breaking down LOLCODE into syntax trees.
+
+Adrian will do research and work primarily on translating syntax trees of code in Python.
+
     
 # Intended pacing:
 
-TBD...
+Week 1: Researching LOLCODE, finding updated syntax, putting together documentation note, planning and beginning implementation (ei figuring out syntax tree structure)
+
+Week 2: Complete implementation of parsing LOLCODE and translating it
+
+Extra Time: Writing LOLCODE testers, debugging, presentation
