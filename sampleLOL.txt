@@ -1,6 +1,21 @@
 HAI 1.2
-IM IN YR LOOP UPPIN YR VAR TIL BOTH SAEM VAR AN 10
-    VISIBLE SUM OF VAR AN 1
-    
-IM OUTTA YR LOOP
+HOW IZ I hello [YR hi [AN YR bye]]
+    IM IN YR LOOP UPPIN YR VAR TIL BOTH SAEM VAR AN 10
+        VISIBLE SUM OF VAR AN 1
+        VISIBLE SUM OF hi AN 2
+        VISIBLE SUM OF bye AN 2
+        BOTH SAEM NAMES AN "Name", O RLY?
+            YA RLY
+                VISIBLE "My name is ABCD"
+            NO WAI
+                VISIBLE "Your name is ABCD"
+        OIC
+    IM OUTTA YR LOOP
+    FOUND YR SUM OF hi AN 3
+IF YOU SAY SO
+OBTW This was mad hard to
+    parse
+    made me wanna cry LOL
+TLDR
+I IZ hello [YR 3 [AN YR 4]]
 KTHXBYE
