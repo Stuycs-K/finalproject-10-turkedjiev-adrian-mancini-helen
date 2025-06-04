@@ -3,17 +3,44 @@
  
 ### HEN-TURKEY
 
-Helen Mancini and Adrian Turkejiev
+Members: Helen Mancini and Adrian Turkejiev
 
 ### Project Description:
 
-Python - LOLCODE Langage Interpreter
+We are making a LOLCODE to Python Langage Translator, wherein LOLCODE is translated into a python file, which can then be run. 
 
 ### Instructions:
 
-How does the user install/compile/run the program. (CHANGE THIS!!!!!)
-How does the user interact with this program? (CHANGE THIS!!!!!)
+Nothing needs to be installed for this program. A user simply has to create a text file containing the LOLCODE they wish to be translated. If you want to generate a python file from LOLCODE, run the following command:
 
-### Resources/ References:
+```
+make translate ARGS="<input_LOLCODE_file_name> <output_PYTHON_file_name>"
+```
 
-list here(CHANGE THIS!!!!!)
+If you want to simply run a LOLCODE file, you can run:
+
+```
+make run ARGS="<input_LOLCODE_file_name>"
+```
+
+This creates a temporary Python file with the translated LOLCODE, executes it, and then deletes it. 
+
+### Resources / References:
+
+#### LOLCODE Documentation:
+- https://github.com/justinmeza/lolcode-spec/blob/master/v1.3/lolcode-spec-v1.3.md (primarily used)
+- https://gist.github.com/sharmaeklavya2/8a0e2581baf969be0f64
+- https://clever-thompson-493f7c.netlify.app/docs/operators/
+- https://lokalise.com/blog/lolcode-tutorial-on-programming-language-for-cat-lovers/
+
+#### AST Resources:
+- https://docs.python.org/3/library/ast.html (the documentation for AST)
+- https://medium.com/@wshanshan/intro-to-python-ast-module-bbd22cd505f7
+- https://github.com/xbeat/Machine-Learning/blob/main/Exploring%20Python's%20Abstract%20Syntax%20Tree%20Manipulation.md
+- https://lisperator.net/pltut/parser/
+- https://www.alternetsoft.com/blog/code-parsing-explained
+
+We used these to understand how parsing into Abstract Syntax Trees for later translation should be approached. 
+
+   
+
