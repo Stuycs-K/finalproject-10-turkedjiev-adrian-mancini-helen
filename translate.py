@@ -511,17 +511,18 @@ def translate():
         else:
             #print(dictionary)
             ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
-            ret += translate_expression(dictionary)
+            ret += translate_expression(dictionary, True)
                 
         ret += '\n'
     print(ret)
 
-def translate_expression(dictionary):
+def translate_expression(dictionary, is_new_line):
     global trans_func, trans_loop
     if dictionary == {}:
         return ""
     ret = ""
-    ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
+    if is_new_line:
+        ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
 
     #if trans_func:
     #    ret += "    "
@@ -555,7 +556,7 @@ def translate_expression(dictionary):
     elif temp_type == "math":
         ret += f'{temp_args[1]} {temp_args[0]} {temp_args[2]}'
     elif temp_type == "print":
-        ret += f'print({translate_expression(temp_args[0])})'
+        ret += f'print({translate_expression(temp_args[0], False)})'
     elif temp_type == "comment":
         ret += f'#{temp_args[0]}'.strip()
     elif temp_type == "boolean":
@@ -573,7 +574,7 @@ def translate_expression(dictionary):
                 ret += f', {temp_args[3]}'
             ret += '):\n'
             for child_line in temp_args[4]:
-                ret += f'{    translate_expression(child_line)}\n'
+                ret += f'{    translate_expression(child_line, True)}\n'
         elif temp_args[0] == 'call': 
             ret += f'{temp_args[1]}('
             if temp_args[2] != "":
@@ -594,7 +595,7 @@ def translate_expression(dictionary):
         else:
             ret += f'for {temp_args[1]} in range(0,{temp_args[2]},-1):'
     elif temp_type == "return":
-        ret += f'return {translate_expression(temp_args[0])}'
+        ret += f'return {translate_expression(temp_args[0], False)}'
     elif temp_type == "conditional":
         ret += f'if {temp_args[1]} {temp_args[0]} {temp_args[2]}:'
     elif temp_type == "if-else" and temp_args[0] == 'else':
