@@ -109,14 +109,6 @@ def mathParse(l, o):
     global latest_id
     tokens = l.split() 
     operator = o
-    '''
-    Make sure to account for recursive case for inbetween SUM OF ... AN #
-    EXAMPLE:
-        HAI 1.2
-        VISIBLE "Welcome to JDoodle!!"
-        VISIBLE SUM OF 9 AN PRODUKT OF 6 AN QUOSHUNT OF 4 AN 6                  BTW answer 0
-        KTHXBYE
-    '''
     arg1 = tokens[2]
     arg2 = tokens[4]
     latest_id = calc_id()
@@ -514,26 +506,35 @@ def translate():
             ret += translate_expression(dictionary, True)
                 
         ret += '\n'
-    print(ret)
+    return ret
 
 def translate_expression(dictionary, is_new_line):
     global trans_func, trans_loop
     if dictionary == {}:
         return ""
     ret = ""
+    temp_id = dictionary["id"]
+    temp_type = dictionary["type"]
+    temp_args = dictionary["arguments"]
     if is_new_line:
-        ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
+        if temp_type == "if-else" and temp_args[0] == 'else':
+            ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 3)
+        else:
+
+            ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
 
     #if trans_func:
     #    ret += "    "
     #if trans_loop:
     #    ret += "    "
-    temp_id = dictionary["id"]
-    temp_type = dictionary["type"]
-    temp_args = dictionary["arguments"]
-    print(f'{dictionary["original"]} --> {temp_id}')
+    
+    #print(f'{dictionary["original"]} --> {temp_id}')
     if temp_type == "literal":
-        ret = temp_args[0]
+        if is_new_line:
+            ret = '#' + temp_args[0].strip()
+        else:
+            ret = temp_args[0]
+
     elif temp_type == "declare":
         ret += temp_args[0]
     elif temp_type == "deallocate":
@@ -600,6 +601,8 @@ def translate_expression(dictionary, is_new_line):
         ret += f'if {temp_args[1]} {temp_args[0]} {temp_args[2]}:'
     elif temp_type == "if-else" and temp_args[0] == 'else':
         ret += 'else:'
+    else:
+        ret += f'#{dictionary["original"]}'
 
     return ret
 
@@ -611,18 +614,24 @@ def run(s):
     for line in lines:
         leading_spaces = len(line) - len(line.strip())
         latest_scope = leading_spaces/4
-        if latest_scope > 0:
-            print("latest multi " + str(latest_multi_id))
-            parseMulti(line)
+        ast += [parseLOL(line)]
+        # if latest_scope > 0:
+        #     print("latest multi " + str(latest_multi_id))
+        #     parseMulti(line)
 
-        else:
-            ast += [parseLOL(line)]
-            latest_multi_id = latest_id
-        print(1)
-        line_reading_in += 1
+        # else:
+        #     ast += [parseLOL(line)]
+        #     latest_multi_id = latest_id
+        # print(1)
+        # line_reading_in += 1
     print_ast()
     print('-------\nTRANSLATED::')
-    translate()
+    translated_code = translate()
+    file = open("output.py", "w")
+
+    # Write some text to the file
+    file.write(translated_code)
+
 
 #~~~~~~~~~~~ TESTING ~~~~~~~~~~~#
 
