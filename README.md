@@ -3,7 +3,7 @@
  
 ### HEN-TURKEY
 
-Members: Helen Mancini and Adrian Turkejiev
+Members: Helen Mancini and Adrian Turkedjiev
 
 ### Project Description:
 
