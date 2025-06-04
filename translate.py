@@ -428,11 +428,14 @@ def parseMulti(line):
             if dictionary["id"] == latest_multi_id:
                 if dictionary["type"] == "comment":
                     dictionary["arguments"][3] += line
-                if dictionary["type"] == "loop" or dictionary["type"] == "function" or dictionary["type"]:
+                elif dictionary["type"] == "loop" or dictionary["type"] == "conditional":
                     print(line)
                     print(parseLOL(line))
-                    dictionary["arguments"][3] += parseLOL(line)
-                #needs if-else
+                    dictionary["arguments"][3] += [parseLOL(line)]
+                elif dictionary["type"] == "function":
+                    dictionary["arguments"][4] += [parseLOL(line)]
+                elif dictionary["type"] == "if-else":
+                    dictionary["arguments"][2] += [parseLOL(line)]
     pass
 
 
@@ -484,6 +487,7 @@ def translate():
                 ret += f'{temp_args[1]} {temp_args[0]}  {temp_args[2]}'
             elif temp_type == "print":
                 ret += f'print({temp_args[0]})'
+                
         ret += '\n'
     print(ret)
 
@@ -492,6 +496,11 @@ def translate_expression(dictionary):
         return dictionary["arguments"][0]
     elif dictionary["type"] == "math":
         return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}  {dictionary["arguments"][2]}'
+    elif dictionary["type"] == "boolean":
+        if {dictionary["arguments"][0]} == "not":
+            return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}'
+        else:
+            return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}  {dictionary["arguments"][2]}'
     else:
         return ""
 
