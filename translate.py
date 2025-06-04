@@ -82,7 +82,7 @@ line_reading_in = 1
 def calc_id():
 
     global latest_id, latest_scope
-    new_id = round(line_reading_in*100 + latest_id + (1 * 10**-latest_scope), int(latest_scope))
+    new_id = round(latest_id + (1 * 10**-latest_scope), int(latest_scope))
     print("LATEST ID: " + str(new_id))
     #print("older ID: " + str(latest_id + (1 * 10**-latest_scope)))
     return new_id
@@ -194,6 +194,8 @@ def parseLOL(line):
             "arguments" : [content], 
             "body" : []
             }
+        latest_multi_id = latest_id
+        print('chane in multi')
     elif "BTW" in line:
         content = line[4:]
         latest_id = calc_id()
@@ -228,6 +230,8 @@ def parseLOL(line):
             "arguments" : [operation, variable, limit, content], 
             "body" : []
             }
+        latest_multi_id = latest_id
+        print('chane in multi')
     elif "IM OUTTA YR" in bare_content:
         ret = {
             "id" : latest_id,
@@ -276,6 +280,8 @@ def parseLOL(line):
             "arguments" : [def_or_call, function_name, argument_1, argument_2, content], 
             "body" : []
             }
+        latest_multi_id = latest_id
+        print('chane in multi')
     elif "FOUND YR" in bare_content: #return statement is its own type, in the multiline
         strip = line.strip()
         value = parseLOL(strip[9:])
@@ -310,6 +316,8 @@ def parseLOL(line):
             "arguments" : [operator, argument_1, argument_2, content],
             "body" : []
             }
+        latest_multi_id = latest_id
+        print('chane in multi')
     elif "YA RLY" in bare_content: #THREE COMMANDS POSSIBLE... 
         if_or_else = "if"
         content = []
@@ -321,6 +329,8 @@ def parseLOL(line):
             "arguments" : [if_or_else, content],
             "body" : []
         }
+        latest_multi_id = latest_id
+        print('chane in multi')
     elif "NO WAI" in bare_content: 
         if_or_else = "else"
         content = [] 
@@ -332,6 +342,8 @@ def parseLOL(line):
             "arguments" : [if_or_else, content],
             "body" : []
         }
+        latest_multi_id = latest_id
+        print('chane in multi')
     elif "OIC" in bare_content:
         #ignore, if statement ended
         pass
@@ -474,7 +486,6 @@ def parseMulti(line):
                     dictionary["arguments"][4] += [parseLOL(line)]
                 elif dictionary["type"] == "if-else":
                     dictionary["arguments"][2] += [parseLOL(line)]
-    pass
 
 
 #~~~~~~~~~~~ TRANSLATE TO PYTHON ~~~~~~~~~~~#
@@ -499,7 +510,7 @@ def translate():
             pass
         else:
             #print(dictionary)
-            #ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
+            ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
             ret += translate_expression(dictionary)
                 
         ret += '\n'
@@ -510,6 +521,8 @@ def translate_expression(dictionary):
     if dictionary == {}:
         return ""
     ret = ""
+    ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
+
     #if trans_func:
     #    ret += "    "
     #if trans_loop:
@@ -517,13 +530,13 @@ def translate_expression(dictionary):
     temp_id = dictionary["id"]
     temp_type = dictionary["type"]
     temp_args = dictionary["arguments"]
+    print(f'{dictionary["original"]} --> {temp_id}')
     if temp_type == "literal":
         ret = temp_args[0]
     elif temp_type == "declare":
         ret += temp_args[0]
     elif temp_type == "deallocate":
         ret += f'{temp_args[0]} = None'
-        
     elif temp_type == "instatiate":
         assigned_type = ""
         match temp_args[1]:
@@ -560,7 +573,7 @@ def translate_expression(dictionary):
                 ret += f', {temp_args[3]}'
             ret += '):\n'
             for child_line in temp_args[4]:
-                ret += f'{translate_expression(child_line)}\n'
+                ret += f'{    translate_expression(child_line)}\n'
         elif temp_args[0] == 'call': 
             ret += f'{temp_args[1]}('
             if temp_args[2] != "":
@@ -598,7 +611,7 @@ def run(s):
         leading_spaces = len(line) - len(line.strip())
         latest_scope = leading_spaces/4
         if latest_scope > 0:
-            #print("latest multi " + str(latest_multi_id))
+            print("latest multi " + str(latest_multi_id))
             parseMulti(line)
 
         else:
