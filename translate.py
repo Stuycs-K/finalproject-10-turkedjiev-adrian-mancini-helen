@@ -70,15 +70,22 @@ literal
 
 #~~~~~~~~~~~ SET UP ~~~~~~~~~~~#
 
-global ast, latest_id, latest_multi_id, latest_scope
+global ast, latest_id, latest_multi_id, latest_scope, trans_func, trans_loop, line_reading_in
 ast = []
 latest_id = 0
 latest_multi_id = 0
 latest_scope = 0
+trans_func = False
+trans_loop = False
+line_reading_in = 1
 
 def calc_id():
+
     global latest_id, latest_scope
-    return latest_id + (1 * 10**-latest_scope)
+    new_id = round(line_reading_in*100 + latest_id + (1 * 10**-latest_scope), int(latest_scope))
+    print("LATEST ID: " + str(new_id))
+    #print("older ID: " + str(latest_id + (1 * 10**-latest_scope)))
+    return new_id
 
 
 def read(filename):
@@ -198,6 +205,13 @@ def parseLOL(line):
             "body" : []
             }
     elif "TLDR" in bare_content:
+        ret = {
+            "id" : latest_id,
+            "original" : line,
+            "type" : "end_func",
+            "arguments" : [], 
+            "body" : []
+            }
         #ignore, ends function
         pass
     elif "IM IN YR" in bare_content: #JUST DOING TWO TYPES: UPPIN (increment by one) and NERFIN (decrement by one AKA range(10, 0, -1)
@@ -215,25 +229,15 @@ def parseLOL(line):
             "body" : []
             }
     elif "IM OUTTA YR" in bare_content:
-        #ignore, not in python...
-        pass
-    elif "HOW IZ I" in bare_content: #limited to two arguments!
-        tokens = line.split()
-        def_or_call = "def"
-        function_name = tokens[3]
-        if "[YR" in bare_content:
-            argument_1 = tokens[5] #after [YR
-        if "[AN YR" in bare_content:
-            argument_2 = tokens[8] #after [AN YR
-        content = []
-        latest_id = calc_id()
         ret = {
             "id" : latest_id,
             "original" : line,
-            "type" : "function",
-            "arguments" : [def_or_call, function_name, argument_1, argument_2, content], 
+            "type" : "end_loop",
+            "arguments" : [], 
             "body" : []
             }
+        #ignore, not in python...
+        pass
     elif "I IZ" in bare_content:
         tokens = line.split()
         def_or_call = "call"
@@ -241,7 +245,7 @@ def parseLOL(line):
         if "[YR" in bare_content:
             argument_1 = tokens[4] #after [YR
         if "[AN YR" in bare_content:
-            argument_2 = tokens[7] #after [AN YR
+            argument_2 = tokens[7].strip(']]') #after [AN YR
         content = []
         latest_id = calc_id()
         ret = {
@@ -249,6 +253,27 @@ def parseLOL(line):
             "original" : line,
             "type" : "function",
             "arguments" : [def_or_call, function_name, argument_1, argument_2], #doesn't have content because call
+            "body" : []
+            }
+    elif "HOW IZ I" in bare_content: #limited to two arguments!
+        tokens = line.split()
+        def_or_call = "def"
+        function_name = tokens[3]
+        if "[YR" in bare_content:
+            argument_1 = tokens[5] #after [YR
+        else:
+            argument_1 = ""
+        if "[AN YR" in bare_content:
+            argument_2 = tokens[8].strip(']]')#after [AN YR
+        else:
+            argument_2 = ""
+        content = []
+        latest_id = calc_id()
+        ret = {
+            "id" : latest_id,
+            "original" : line,
+            "type" : "function",
+            "arguments" : [def_or_call, function_name, argument_1, argument_2, content], 
             "body" : []
             }
     elif "FOUND YR" in bare_content: #return statement is its own type, in the multiline
@@ -272,11 +297,11 @@ def parseLOL(line):
         if "BOTH SAEM" in bare_content:
             operator = "=="
             argument_1 = tokens[2]
-            argument_2 = tokens[4]
+            argument_2 = tokens[4].strip(',')
         elif "DIFFRINT" in bare_content:
             operator = "!="
             argument_1 = tokens[1]
-            argument_2 = tokens[2]
+            argument_2 = tokens[2].strip(',')
         latest_id = calc_id()
         ret = {
             "id" : latest_id,
@@ -369,7 +394,7 @@ def parseLOL(line):
     #are we including SRS, YARN & regular identifier?
     elif "VISIBLE" in bare_content:
         tokens = line.split()
-        value = " ".join(tokens[1:])
+        value = parseLOL(" ".join(tokens[1:]))
         latest_id = calc_id()
         ret = {
             "id" : latest_id,
@@ -406,7 +431,7 @@ def parseLOL(line):
     elif "EITHER OF" in bare_content:
         ret = booleanParse(line, "or")
     elif "WON OF" in bare_content:
-        ret = booleanParse(line, "xor")
+        ret = booleanParse(line, "^")
     elif "NOT" in bare_content:
         tokens = line.split()
         arg1 = tokens[1]
@@ -415,7 +440,7 @@ def parseLOL(line):
             "id" : latest_id,
             "original" : line,
             "type" : "boolean",
-            "arguments" : [operator, arg1],
+            "arguments" : ["not", arg1],
             "body" : []
             }
     else:
@@ -437,13 +462,13 @@ def parseMulti(line):
         if dictionary == {}:
             pass
         else:
-            print(dictionary["id"])
+            #print(dictionary["id"])
             if dictionary["id"] == latest_multi_id:
                 if dictionary["type"] == "comment":
                     dictionary["arguments"][0] += line
                 elif dictionary["type"] == "loop" or dictionary["type"] == "conditional":
-                    print("parsing multi line: " + line)
-                    print(parseLOL(line))
+                    #print("parsing multi line: " + line)
+                    #print(parseLOL(line))
                     dictionary["arguments"][3] += [parseLOL(line)]
                 elif dictionary["type"] == "function":
                     dictionary["arguments"][4] += [parseLOL(line)]
@@ -468,70 +493,122 @@ def translate():
     '''
     global ast 
     ret = ""
+    print("STARTING TRANSLATION")
     for dictionary in ast:
         if dictionary == {}:
             pass
         else:
-            print(dictionary)
-            temp_id = dictionary["id"]
-            temp_type = dictionary["type"]
-            temp_args = dictionary["arguments"]
-            ret += "    " * (len(str(temp_id).strip(".0")) - 1)
-            if temp_type == "declare":
-                ret += temp_args[0]
-            elif temp_type == "deallocate":
-                ret += f'{temp_args[0]} = None'
-            elif temp_type == "instatiate":
-                assigned_type = ""
-                match temp_args[1]:
-                    case "YARN":
-                        assigned_type = "String"
-                    case "NUMBR":
-                        assigned_type = "int"
-                    case "NUMBAR":
-                        assigned_type = "float"
-                    case "TROOF":
-                        assigned_type = "bool"
-                ret += f'{assigned_type} {temp_args[0]}'
-            elif temp_type == "assign":
-                assigned_value = translate_expression(temp_args[1])
-                ret += f'{temp_args[0]} = {assigned_value}'
-            elif temp_type == "math":
-                ret += f'{temp_args[1]} {temp_args[0]}  {temp_args[2]}'
-            elif temp_type == "print":
-                ret += f'print({temp_args[0]})'
+            #print(dictionary)
+            #ret += "    " * (len(str(dictionary["id"]).strip(".0")) - 1)
+            ret += translate_expression(dictionary)
                 
         ret += '\n'
     print(ret)
 
 def translate_expression(dictionary):
-    if dictionary["type"] == "literal":
-        return dictionary["arguments"][0]
-    elif dictionary["type"] == "math":
-        return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}  {dictionary["arguments"][2]}'
-    elif dictionary["type"] == "boolean":
-        if {dictionary["arguments"][0]} == "not":
-            return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}'
-        else:
-            return f'{dictionary["arguments"][1]} {dictionary["arguments"][0]}  {dictionary["arguments"][2]}'
-    else:
+    global trans_func, trans_loop
+    if dictionary == {}:
         return ""
+    ret = ""
+    #if trans_func:
+    #    ret += "    "
+    #if trans_loop:
+    #    ret += "    "
+    temp_id = dictionary["id"]
+    temp_type = dictionary["type"]
+    temp_args = dictionary["arguments"]
+    if temp_type == "literal":
+        ret = temp_args[0]
+    elif temp_type == "declare":
+        ret += temp_args[0]
+    elif temp_type == "deallocate":
+        ret += f'{temp_args[0]} = None'
+        
+    elif temp_type == "instatiate":
+        assigned_type = ""
+        match temp_args[1]:
+            case "YARN":
+                assigned_type = "String"
+            case "NUMBR":
+                assigned_type = "int"
+            case "NUMBAR":
+                assigned_type = "float"
+            case "TROOF":
+                assigned_type = "bool"
+        ret += f'{assigned_type} {temp_args[0]}'
+    elif temp_type == "assign":
+        assigned_value = translate_expression(temp_args[1])
+        ret += f'{temp_args[0]} = {assigned_value}'
+    elif temp_type == "math":
+        ret += f'{temp_args[1]} {temp_args[0]} {temp_args[2]}'
+    elif temp_type == "print":
+        ret += f'print({translate_expression(temp_args[0])})'
+    elif temp_type == "comment":
+        ret += f'#{temp_args[0]}'.strip()
+    elif temp_type == "boolean":
+        if len(temp_args) == 2:
+            ret += f'{temp_args[0]} {temp_args[1]}'
+        else:
+            ret += f'{temp_args[1]} {temp_args[0]} {temp_args[2]}'
+    elif temp_type == "function":
+        if temp_args[0] == 'def':
+            #trans_func = True
+            ret += f'def {temp_args[1]}('
+            if temp_args[2] != "":
+                ret += temp_args[2]
+            if temp_args[3] != "":
+                ret += f', {temp_args[3]}'
+            ret += '):\n'
+            for child_line in temp_args[4]:
+                ret += f'{translate_expression(child_line)}\n'
+        elif temp_args[0] == 'call': 
+            ret += f'{temp_args[1]}('
+            if temp_args[2] != "":
+                ret += temp_args[2]
+            if temp_args[3] != "":
+                ret += f', {temp_args[3]}'
+            ret += ')'
+    elif temp_type == "end_func":
+        #trans_func = False
+        ret = ""
+    elif temp_type == "end_loop":
+        #trans_loop = False
+        ret = ""
+    elif temp_type == "loop":
+        #trans_loop = True
+        if temp_args[0] == "UPPIN":
+            ret += f'for {temp_args[1]} in range({temp_args[2]}):'
+        else:
+            ret += f'for {temp_args[1]} in range(0,{temp_args[2]},-1):'
+    elif temp_type == "return":
+        ret += f'return {translate_expression(temp_args[0])}'
+    elif temp_type == "conditional":
+        ret += f'if {temp_args[1]} {temp_args[0]} {temp_args[2]}:'
+    elif temp_type == "if-else" and temp_args[0] == 'else':
+        ret += 'else:'
+
+    return ret
 
 #~~~~~~~~~~~ RUN ~~~~~~~~~~~#
 
 def run(s):
-    global latest_id, latest_multi_id, latest_scope, ast
+    global latest_id, latest_multi_id, latest_scope, ast, line_reading_in
     lines = s.splitlines()
     for line in lines:
-        leading_spaces = len(line) - len(line.lstrip())
+        leading_spaces = len(line) - len(line.strip())
         latest_scope = leading_spaces/4
         if latest_scope > 0:
-            print("latest multi " + str(latest_multi_id))
+            #print("latest multi " + str(latest_multi_id))
             parseMulti(line)
 
         else:
             ast += [parseLOL(line)]
             latest_multi_id = latest_id
+        print(1)
+        line_reading_in += 1
+    print_ast()
+    print('-------\nTRANSLATED::')
+    translate()
 
 #~~~~~~~~~~~ TESTING ~~~~~~~~~~~#
 
@@ -539,5 +616,4 @@ def run(s):
 LOLCODE = read("sampleLOL.txt")
 print(f'ORIGINAL::\n\n{LOLCODE}')
 run(LOLCODE)
-print('-------\nTRANSLATED::')
-translate()
+

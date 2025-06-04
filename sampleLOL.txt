@@ -12,7 +12,7 @@ HOW IZ I hello [YR hi [AN YR bye]]
         OIC
     IM OUTTA YR LOOP
     FOUND YR SUM OF hi AN 3
-IF YOU SAY SO
+IF U SAY SO
 OBTW This was mad hard to
     parse
     made me wanna cry LOL
