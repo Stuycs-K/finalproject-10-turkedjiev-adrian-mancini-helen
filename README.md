@@ -34,13 +34,10 @@ This creates a temporary Python file with the translated LOLCODE, executes it, a
 - https://lokalise.com/blog/lolcode-tutorial-on-programming-language-for-cat-lovers/
 
 #### AST Resources:
-- https://docs.python.org/3/library/ast.html (the documentation for AST)
+- https://docs.python.org/3/library/ast.html (the documentation for Python's AST)
 - https://medium.com/@wshanshan/intro-to-python-ast-module-bbd22cd505f7
 - https://github.com/xbeat/Machine-Learning/blob/main/Exploring%20Python's%20Abstract%20Syntax%20Tree%20Manipulation.md
 - https://lisperator.net/pltut/parser/
 - https://www.alternetsoft.com/blog/code-parsing-explained
 
-We used these to understand how parsing into Abstract Syntax Trees for later translation should be approached. 
-
-   
-
+While we didn't end up using Python's AST module, we used these resources to understand how parsing into Abstract Syntax Trees for later translation should be approached. 
