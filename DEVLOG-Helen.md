@@ -64,3 +64,6 @@ Possibly can use AST (what Adrian researched for this)?
 ### 2025-06-2 - HOMEWORK:
 - parse through loops, if statements, functions and calls, multiline comments
 - add to parseMulti()
+
+### 2025-06-3 - : continued debugging parse, wrote more test code, and filmed video!
+- submitted project
