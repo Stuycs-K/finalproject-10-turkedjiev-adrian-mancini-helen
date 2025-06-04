@@ -4,6 +4,7 @@ HOW IZ I hello [YR hi [AN YR bye]]
         VISIBLE SUM OF VAR AN 1
         VISIBLE SUM OF hi AN 2
         VISIBLE SUM OF bye AN 2
+        I HAS A NAMES ITZ "Names"
         BOTH SAEM NAMES AN "Name", O RLY?
             YA RLY
                 VISIBLE "My name is ABCD"

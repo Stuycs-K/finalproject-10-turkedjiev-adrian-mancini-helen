@@ -1,3 +1,8 @@
+import sys
+
+ARGS = sys.argv
+
+
 '''
 File Structure:
 
@@ -83,7 +88,7 @@ def calc_id():
 
     global latest_id, latest_scope
     new_id = round(latest_id + (1 * 10**-latest_scope), int(latest_scope))
-    print("LATEST ID: " + str(new_id))
+    #print("LATEST ID: " + str(new_id))
     #print("older ID: " + str(latest_id + (1 * 10**-latest_scope)))
     return new_id
 
@@ -187,7 +192,6 @@ def parseLOL(line):
             "body" : []
             }
         latest_multi_id = latest_id
-        print('chane in multi')
     elif "BTW" in line:
         content = line[4:]
         latest_id = calc_id()
@@ -223,7 +227,6 @@ def parseLOL(line):
             "body" : []
             }
         latest_multi_id = latest_id
-        print('chane in multi')
     elif "IM OUTTA YR" in bare_content:
         ret = {
             "id" : latest_id,
@@ -273,7 +276,6 @@ def parseLOL(line):
             "body" : []
             }
         latest_multi_id = latest_id
-        print('chane in multi')
     elif "FOUND YR" in bare_content: #return statement is its own type, in the multiline
         strip = line.strip()
         value = parseLOL(strip[9:])
@@ -309,7 +311,6 @@ def parseLOL(line):
             "body" : []
             }
         latest_multi_id = latest_id
-        print('chane in multi')
     elif "YA RLY" in bare_content: #THREE COMMANDS POSSIBLE... 
         if_or_else = "if"
         content = []
@@ -322,7 +323,6 @@ def parseLOL(line):
             "body" : []
         }
         latest_multi_id = latest_id
-        print('chane in multi')
     elif "NO WAI" in bare_content: 
         if_or_else = "else"
         content = [] 
@@ -335,7 +335,6 @@ def parseLOL(line):
             "body" : []
         }
         latest_multi_id = latest_id
-        print('chane in multi')
     elif "OIC" in bare_content:
         #ignore, if statement ended
         pass
@@ -496,7 +495,6 @@ def translate():
     '''
     global ast 
     ret = ""
-    print("STARTING TRANSLATION")
     for dictionary in ast:
         if dictionary == {}:
             pass
@@ -552,7 +550,7 @@ def translate_expression(dictionary, is_new_line):
                 assigned_type = "bool"
         ret += f'{assigned_type} {temp_args[0]}'
     elif temp_type == "assign":
-        assigned_value = translate_expression(temp_args[1])
+        assigned_value = translate_expression(temp_args[1], False)
         ret += f'{temp_args[0]} = {assigned_value}'
     elif temp_type == "math":
         ret += f'{temp_args[1]} {temp_args[0]} {temp_args[2]}'
@@ -615,19 +613,10 @@ def run(s):
         leading_spaces = len(line) - len(line.strip())
         latest_scope = leading_spaces/4
         ast += [parseLOL(line)]
-        # if latest_scope > 0:
-        #     print("latest multi " + str(latest_multi_id))
-        #     parseMulti(line)
-
-        # else:
-        #     ast += [parseLOL(line)]
-        #     latest_multi_id = latest_id
-        # print(1)
-        # line_reading_in += 1
-    print_ast()
-    print('-------\nTRANSLATED::')
+    #print_ast()
+    #print('-------\nTRANSLATED::')
     translated_code = translate()
-    file = open("output.py", "w")
+    file = open(ARGS[2], "w")
 
     # Write some text to the file
     file.write(translated_code)
@@ -636,7 +625,7 @@ def run(s):
 #~~~~~~~~~~~ TESTING ~~~~~~~~~~~#
 
 
-LOLCODE = read("sampleLOL.txt")
-print(f'ORIGINAL::\n\n{LOLCODE}')
+LOLCODE = read(ARGS[1])
+#print(f'ORIGINAL::\n\n{LOLCODE}')
 run(LOLCODE)
 
