@@ -53,7 +53,7 @@ conditional
     "arguments" : ["operator", "argument_1", "argument_2", "content"]
     
 if-else
-    "arguments" : ["if_or_else", "command_1", "command_2", "command_3"]
+    "arguments" : ["if_or_else", "content"]
 
 loop
     "arguments" : ["operation", "variable", "limit", "content"]
@@ -381,30 +381,24 @@ def parseLOL(line):
             }
     elif "YA RLY" in bare_content: #THREE COMMANDS POSSIBLE... 
         if_or_else = "if"
-        commands = line.split(",")
-        command_1 = parseLOL(commands[1])
-        command_2 = parseLOL(commands[2]) #FIX...
-        command_3 = parseLOL(commands[3])
+        content = []
         latest_id = calc_id()
         ret = {
             "id" : latest_id,
             "original" : line,
             "type" : "if-else",
-            "arguments" : [if_or_else, command_1, command_2, command_3],
+            "arguments" : [if_or_else, content],
             "body" : []
         }
     elif "NO WAI" in bare_content: 
         if_or_else = "else"
-        commands = line.split(",")
-        command_1 = parseLOL(commands[1]) #not sure if this will work... 
-        command_2 = parseLOL(commands[2])
-        command_3 = parseLOL(commands[3])
+        content = [] 
         latest_id = calc_id()
         ret = {
             "id" : latest_id,
             "original" : line,
             "type" : "if-else",
-            "arguments" : [if_or_else, command_1, command_2, command_3],
+            "arguments" : [if_or_else, content],
             "body" : []
         }
     elif "OIC" in bare_content:
