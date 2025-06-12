@@ -25,6 +25,12 @@ make run ARGS="<input_LOLCODE_file_name>"
 
 This creates a temporary Python file with the translated LOLCODE, executes it, and then deletes it. 
 
+### Our presentation video
+
+'''
+https://www.youtube.com/watch?v=dUVTx-UdLZY
+'''
+
 ### Resources / References:
 
 #### LOLCODE Documentation:
